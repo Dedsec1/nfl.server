@@ -2,3 +2,28 @@ services:
 #    nfl.example:
 #        class: NflBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
+  nfl.lib.nflhandler:
+    class: NflBundle\Lib\NflHandler
+    calls:
+        - [setContainer, ["@service_container"]]
+
+  nfl.command.urls:
+      class: NflBundle\Command\UrlsCommand
+      arguments:
+          - @nfl.lib.nflhandler
+      tags:
+          -  { name: console.command }
+
+  nfl.command.stream:
+      class: NflBundle\Command\StreamCommand
+      arguments:
+          - @nfl.lib.nflhandler
+      tags:
+          -  { name: console.command }
+
+  nfl.command.rating:
+      class: NflBundle\Command\RatingCommand
+      arguments:
+          - @nfl.lib.nflhandler
+      tags:
+          -  { name: console.command }

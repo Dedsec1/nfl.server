@@ -24,14 +24,14 @@ class StreamCommand extends NflCommand
             ->setDescription('Stream selected NFL game')
             ->addOption(
                 'game',
-                'g',
+                null,
                 InputOption::VALUE_OPTIONAL,
                 'Game to be streamed',
                 null
             )
             ->addOption(
                 'shift',
-                's',
+                null,
                 InputOption::VALUE_OPTIONAL,
                 'Time shift for streaming',
                 null

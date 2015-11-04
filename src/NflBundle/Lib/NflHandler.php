@@ -11,6 +11,7 @@ namespace NflBundle\Lib;
 use Symfony\Component\DependencyInjection\ContainerAware;
 use NflBundle\Lib\Utils;
 use NflBundle\Lib\NflTeams;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class NflHandler extends ContainerAware
 {
@@ -34,6 +35,16 @@ class NflHandler extends ContainerAware
     const GAME_URL_FOUND        = 2;
     const GAME_URL_EXISTS       = 3;
     const GAME_URL_NOT_FOUND    = 4;
+    const GAME_FILE_EXISTS      = 5;
+    const GAME_STREAMING        = 6;
+    const GAME_MD5_NOT_FOUND    = 7;
+
+    protected $nflProvider;
+
+    public function __construct(NflProviderInterface $provider)
+    {
+        $this->nflProvider = $provider;
+    }
 
     public function init($year, $week, $type, $conds, $qlty)
     {
@@ -96,7 +107,7 @@ class NflHandler extends ContainerAware
                 , $this->conds ? 'snap2w' : 'whole'
 //            , $this->qlty
             );
-            $gname = sprintf("NFL%d.W%02d.%s-%s.%s%s.mkv"
+            $gname = sprintf("NFL%d.W%02d.%s-%s.%s%s"
                 , $this->year
                 , $this->week
                 , NflTeams::$teams[$away] ? NflTeams::$teams[$away]["name"] : $away
@@ -180,6 +191,80 @@ class NflHandler extends ContainerAware
             }
         }
 
+    }
+
+    public function streamGame($game, $shift = false) {
+        //1.creating dir
+        $dir = sprintf("%s/NFL%d.%s%02d.%s%s"
+            , $this->container->getParameter("nfl_path")
+            , $this->year
+            , $this->type == "pre" ? "PS" : "W"
+            , $this->week
+            , $this->week >= 18 ? $this->playoff."." : ""
+            , $this->conds ? "CG" : "whole"
+        );
+        if (!is_dir($dir)) {
+            mkdir($dir);
+        }
+        //2.getting file with m3u8 urls
+        $file = sprintf("%s/%s/%s_%d_%02d_m3u8_%d.txt"
+            , $this->container->getParameter("nfl_path")
+            , self::DATA_DIR
+            , $this->conds ? "conds" : "whole"
+            , $this->year
+            , $this->week
+            , $this->qlty
+        );
+        if (file_exists($file)) {
+            $currentFile  = file_get_contents($file);
+        } else {
+            throw new FileNotFoundException("URI file doesn't exists");
+        }
+
+        $mkv = sprintf("%s/%s.mkv"
+            , $dir
+            , $game['file_name']
+        );
+
+        if (!file_exists($mkv) || $shift) {
+            $pattern = preg_quote($game['game_id'], '/');
+            // finalise the regular expression, matching the whole line
+            $pattern = "/^.*$pattern.*\$/m";
+
+            if (preg_match_all($pattern, $currentFile, $matches)) {
+                $url = implode("\n", $matches[0]);
+                $url = trim(preg_replace('/\s+/', '', $url));
+
+                //get md5
+                $md5 = $this->nflProvider->getMD5($game['id']);
+                if ($md5 == null) {
+                    return self::GAME_MD5_NOT_FOUND;
+                }
+
+                if ($shift) {
+                    Utils::stream(
+                        $url."?".$md5
+                        , sprintf("%s/%s2.mkv", $dir, $game['file_name'])
+                        , $shift
+                        , $this->container->getParameter("nfl_ffmpeg")
+                        , $this->container->getParameter("nfl_acodec")
+                    );
+                } else {
+                    Utils::stream(
+                        $url."?".$md5
+                        , $mkv
+                        , null
+                        , $this->container->getParameter("nfl_ffmpeg")
+                        , $this->container->getParameter("nfl_acodec")
+                    );
+                }
+                return self::GAME_STREAMING;
+            } else {
+                return self::GAME_URL_NOT_FOUND;
+            }
+        } else {
+            return self::GAME_FILE_EXISTS;
+        }
     }
 
     private function setGameOptions() {

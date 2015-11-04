@@ -58,4 +58,111 @@ class Utils
         }
         return $result;
     }
+
+    public static function stream($url, $mkv, $shift = null, $ffmpeg, $acodec){
+        //print_r($url);
+        if ($shift == null) {
+            $cmd = sprintf("%s/ffmpeg -i \"%s\" -c copy -c:a %s \"%s\" " //-c:a libvo_aacenc
+                , $ffmpeg
+                , $url
+                , $acodec
+                , $mkv
+            );
+        } else {
+            $cmd = sprintf("%s/ffmpeg -ss %s -i \"%s\" -ss 0 -c copy -c:a %s \"%s\" " //-c:a libvo_aacenc
+                , $ffmpeg
+                , $shift
+                , $url
+                , $acodec
+                , $mkv
+            );
+        }
+        //print_r($cmd);
+
+        if (strtoupper(substr(PHP_OS, 0, 3) === 'WIN')) {
+            //print_r("WIN");
+            pclose(popen(escapeshellcmd("start cmd.exe /K " . $cmd), "r"));
+        } else {
+            //print_r("Linux");
+            exec($cmd);
+        }
+    }
+
+    public static function sendPostRequest($url, $fields = array(), $cookie = null, $cookiejar) {
+        $fields_string = "";
+        foreach($fields as $key => $value) {
+            $fields_string .= $key.'='.$value.'&';
+        }
+        rtrim($fields_string, '&');
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, self::$curl_options);
+        curl_setopt_array($ch, array(
+            CURLOPT_HEADER          => true,
+            CURLOPT_POST            => count($fields),
+            CURLOPT_POSTFIELDS      => $fields_string
+        ));
+        if ($cookie != null) {
+            curl_setopt_array($ch, array(
+                CURLOPT_COOKIESESSION   => true,
+                CURLOPT_COOKIE          => $cookie,
+                CURLOPT_COOKIEJAR       => $cookiejar
+            ));
+        }
+
+        $retValue = curl_exec($ch);
+
+        // Check for errors and display the error message
+        if($errno = curl_errno($ch)) {
+            $error_message = curl_strerror($errno);
+            echo "cURL error ({$errno}):\n {$error_message}";
+        }
+        curl_close($ch);
+
+        return $retValue;
+    }
+
+    public static function sendGetRequest($url, $fields = array(), $cookie = null, $cookiejar = null) {
+        $fields_string = "";
+        foreach($fields as $key => $value) {
+            $fields_string .= $key.'='.$value.'&';
+        }
+        rtrim($fields_string, '&');
+
+        $ch = curl_init();
+        curl_setopt_array($ch, self::$curl_options);
+        curl_setopt_array($ch, array(
+            CURLOPT_HEADER          => true,
+            // CURLOPT_HTTPHEADER      => array("Content-Type: application/x-www-form-urlencoded; charset=UTF-8", "Host: nfl2go.com:2015"),
+            CURLOPT_USERAGENT       => 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 GTB5',
+            CURLOPT_URL             => $url."?".$fields_string
+        ));
+
+        if ($cookie != null) {
+            curl_setopt_array($ch, array(
+                CURLOPT_COOKIESESSION   => true,
+                CURLOPT_COOKIE          => $cookie,
+                CURLOPT_COOKIEJAR       => $cookiejar
+            ));
+        }
+
+        $retValue = curl_exec($ch);
+
+        // Check for errors and display the error message
+        if($errno = curl_errno($ch)) {
+            $error_message = curl_strerror($errno);
+            echo "cURL error ({$errno}):\n {$error_message}";
+        }
+
+
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($retValue, 0, $header_size);
+        $body = substr($retValue, $header_size);
+
+        curl_close($ch);
+        return array(
+            "header" => $header,
+            "body"   => $body
+        );
+    }
 }

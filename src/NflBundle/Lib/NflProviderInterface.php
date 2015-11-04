@@ -11,7 +11,5 @@ namespace NflBundle\Lib;
 
 interface  NflProviderInterface
 {
-    const DATA_DIR  = "@gamepass";
-
     public function getMD5($gameId);
 }

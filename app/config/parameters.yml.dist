@@ -20,5 +20,6 @@ parameters:
 
     nfl_kick_off:  10 September 2015 midnight
     nfl_path:      e:/NFL/
+    nfl_data_dir:  \@gamepass
     nfl_ffmpeg:    e:/Installs/video/ffmpeg-20141130/bin
     nfl_acodec:    libvo_aacenc

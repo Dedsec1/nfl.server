@@ -24,7 +24,6 @@ class NflHandler extends ContainerAware
     public $resolution;
     public $playoff;
 
-    const DATA_DIR      = "@gamepass";
     public static $SERVER_LIST 	= ['cdnak.neulion.com']; //'cdnak.neulion.com','cdnl3nl.neulion.com'
     public static $SERVER_ARCH 	= [82, 84];
     const SERVER_START 	= 200;//80
@@ -158,7 +157,7 @@ class NflHandler extends ContainerAware
         $date = new \DateTime($game['time'], new \DateTimeZone("America/New_York"));
         $file = sprintf("%s/%s/%s_%d_%02d_m3u8_%d.txt"
             , $this->container->getParameter("nfl_path")
-            , self::DATA_DIR
+            , $this->container->getParameter("nfl_data_dir")
             , $this->conds ? "conds" : "whole"
             , $this->year
             , $this->week
@@ -209,7 +208,7 @@ class NflHandler extends ContainerAware
         //2.getting file with m3u8 urls
         $file = sprintf("%s/%s/%s_%d_%02d_m3u8_%d.txt"
             , $this->container->getParameter("nfl_path")
-            , self::DATA_DIR
+            , $this->container->getParameter("nfl_data_dir")
             , $this->conds ? "conds" : "whole"
             , $this->year
             , $this->week
@@ -305,7 +304,7 @@ class NflHandler extends ContainerAware
     private function getScoresXML() {
         $file = sprintf("%s/%s/%d_%s_%02d.xml"
             , $this->container->getParameter("nfl_path")
-            , self::DATA_DIR
+            , $this->container->getParameter("nfl_data_dir")
             , $this->year
             , $this->type
             , $this->week

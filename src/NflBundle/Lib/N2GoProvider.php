@@ -18,7 +18,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
         $cookie = file_get_contents(
             sprintf("%s/%s/nfl2go_cookie.txt"
                 , $this->container->getParameter("nfl_path")
-                , self::DATA_DIR
+                , $this->container->getParameter("nfl_data_dir")
             )
         );
 
@@ -33,7 +33,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 file_put_contents(
                     sprintf("%s/%s/nfl2go_cookie.txt"
                         , $this->container->getParameter("nfl_path")
-                        , self::DATA_DIR
+                        , $this->container->getParameter("nfl_data_dir")
                 ), $cookie);
             }
         }
@@ -52,7 +52,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 , $cookie
                 , sprintf("%s/%s/cookie.txt"
                     , $this->container->getParameter("nfl_path")
-                    , self::DATA_DIR
+                    , $this->container->getParameter("nfl_data_dir")
                 )
             );
         }
@@ -95,7 +95,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 , $cookie
                 , sprintf("%s/%s/cookie.txt"
                     , $this->container->getParameter("nfl_path")
-                    , self::DATA_DIR
+                    , $this->container->getParameter("nfl_data_dir")
                 )
             );
 

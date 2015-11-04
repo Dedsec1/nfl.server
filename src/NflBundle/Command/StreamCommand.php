@@ -24,14 +24,14 @@ class StreamCommand extends NflCommand
             ->setDescription('Stream selected NFL game')
             ->addOption(
                 'game',
-                'gm',
+                'g',
                 InputOption::VALUE_OPTIONAL,
                 'Game to be streamed',
                 null
             )
             ->addOption(
                 'shift',
-                'sh',
+                's',
                 InputOption::VALUE_OPTIONAL,
                 'Time shift for streaming',
                 null
@@ -54,9 +54,9 @@ class StreamCommand extends NflCommand
                 }
                 $is_shift = (stripos($game['file_name'], $sgame) !== false) && ($shift != null);
 
-                $status = $this->nflHandler->streamGame($game, $is_shift ? $shift : false);
 
                 $output->write($game['file_name'] . "\t\t:: ");
+                $status = $this->nflHandler->streamGame($game, $is_shift ? $shift : false);
 
                 switch ($status) {
                     case NflHandler::GAME_MD5_NOT_FOUND:

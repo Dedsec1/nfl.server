@@ -7,8 +7,20 @@ services:
     calls:
         - [setContainer, ["@service_container"]]
 
+  nfl.lib.ratinghandler:
+    class: NflBundle\Lib\RatingHandler
+    calls:
+        - [setContainer, ["@service_container"]]
+
   nfl.command.urls:
       class: NflBundle\Command\UrlsCommand
+      arguments:
+          - @nfl.lib.nflhandler
+      tags:
+          -  { name: console.command }
+
+  nfl.command.schedule:
+      class: NflBundle\Command\ScheduleCommand
       arguments:
           - @nfl.lib.nflhandler
       tags:
@@ -25,5 +37,7 @@ services:
       class: NflBundle\Command\RatingCommand
       arguments:
           - @nfl.lib.nflhandler
+      calls:
+          - [setRatingHandler, ["@nfl.lib.ratinghandler"]]
       tags:
           -  { name: console.command }

@@ -31,7 +31,7 @@ abstract class NflCommand extends ContainerAwareCommand
         );
 
         $stdout->writeln(sprintf(
-            "<info>[%s] [year=%d] [week=%d] [type=%s] [qlty=%d] [game=%s]</>"
+            "<comment>[%s] [year=%d] [week=%d] [type=%s] [qlty=%d] [game=%s]</>"
             , $this->getDescription()
             , $this->nflHandler->year
             , $this->nflHandler->week

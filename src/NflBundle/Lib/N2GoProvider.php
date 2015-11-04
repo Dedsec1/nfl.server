@@ -66,7 +66,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
 
     private function getN2GoCookie() {
         $pattern = "/Set-Cookie: (.*?);/is";
-        $loginForm =Utils::sendGetRequest("http://nfl2go.com:2015/Account/Login");
+        $loginForm = Utils::sendGetRequest("http://nfl2go.com:2015/Account/Login");
         preg_match_all($pattern, $loginForm['header'], $matches);
         array_shift($matches);
 

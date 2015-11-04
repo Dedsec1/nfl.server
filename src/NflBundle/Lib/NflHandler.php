@@ -25,8 +25,8 @@ class NflHandler extends ContainerAware
     public $playoff;
 
     const DATA_DIR      = "@gamepass";
-    const SERVER_LIST 	= ['cdnak.neulion.com']; //'cdnak.neulion.com','cdnl3nl.neulion.com'
-    const SERVER_ARCH 	= [82, 84];
+    public static $SERVER_LIST 	= ['cdnak.neulion.com']; //'cdnak.neulion.com','cdnl3nl.neulion.com'
+    public static $SERVER_ARCH 	= [82, 84];
     const SERVER_START 	= 200;//80
     const SERVER_END 	= 220;//170
 
@@ -339,11 +339,11 @@ class NflHandler extends ContainerAware
         $urls = [];
 
         //1. check archive servers
-        for ($j = 0; $j < count(self::SERVER_ARCH); $j++) {
+        for ($j = 0; $j < count(self::$SERVER_ARCH); $j++) {
             $urls[] = sprintf(
                 'http://nlds%d.%s/nlds_vod/nfl/vod/%s.mp4.m3u8'
-                , self::SERVER_ARCH[$j]
-                , self::SERVER_LIST[0]
+                , self::$SERVER_ARCH[$j]
+                , self::$SERVER_LIST[0]
                 , $game_id
             );
         }
@@ -355,7 +355,7 @@ class NflHandler extends ContainerAware
                 $urls[] = sprintf(
                     'http://nlds%d.%s/nlds_vod/nfl/vod/%s.mp4.m3u8'
                     , $i
-                    , self::SERVER_LIST[0]
+                    , self::$SERVER_LIST[0]
                     , $game_id
                 );
             }

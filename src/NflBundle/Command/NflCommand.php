@@ -48,7 +48,7 @@ abstract class NflCommand extends ContainerAwareCommand
                 'y',
                 InputOption::VALUE_OPTIONAL,
                 'NFL Season year',
-                date("Y")
+                null
             )
             ->addOption(
                 'week',

@@ -36,6 +36,13 @@ class StreamCommand extends NflCommand
                 'Time shift for streaming',
                 null
             )
+            ->addOption(
+                'topic',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Create topic for tracker',
+                true
+            )
         ;
 
         parent::configure();
@@ -43,9 +50,11 @@ class StreamCommand extends NflCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $games = $this->nflHandler->getGames();
-        $sgame = $input->getOption("game");
-        $shift = $input->getOption("shift");
+        $games      = $this->nflHandler->getGames();
+        $sgame      = $input->getOption("game");
+        $shift      = $input->getOption("shift");
+        $is_topic   = $input->getOption("topic");
+
 
         if ($games) {
             foreach ($games as $game) {
@@ -77,6 +86,28 @@ class StreamCommand extends NflCommand
                         $output->writeln("<error>Game URL NOT FOUND</error>");
                         break;
 
+                }
+
+                if ($is_topic) {
+                    $topic = $this
+                        ->getContainer()
+                        ->get('templating')
+                        ->render(
+                            "NflBundle:Default:topic.html.twig"
+                            , array(
+                                'game' => $game,
+                                'nfl'  => $this->nflHandler
+                            )
+                        )
+                    ;
+                    file_put_contents(
+                        sprintf(
+                            "%s/%s.txt"
+                            , $this->nflHandler->getGameFileDir()
+                            , $game['file_name']
+                        )
+                        , $topic
+                    );
                 }
 
                 if ($status === NflHandler::GAME_STREAMING) {

@@ -47,7 +47,11 @@ class NflHandler extends ContainerAware
 
     public function init($year, $week, $type, $conds, $qlty)
     {
-        $this->year = $year;
+        if ($year) {
+            $this->year = $year;
+        } else {
+            $this->year = date("Y", strtotime($this->container->getParameter("nfl_kick_off")));
+        }
         if ($week) {
             $this->week = $week;
         } else {
@@ -126,8 +130,11 @@ class NflHandler extends ContainerAware
                 "home"      => NflTeams::$teams[$home]["city"]." ".NflTeams::$teams[$home]["name"],
                 "game"      => $away."@".$home,
                 "id"        => intval($game["id"]),
-                "elias"     => strtolower($game["elias"])
+                "elias"     => strtolower($game["elias"]),
+                "score"     => sprintf("%d - %d", $game->away['p'], $game->home['p']),
 
+                "logo_away" => NflTeams::$teams[$away]["logo"],
+                "logo_home" => NflTeams::$teams[$home]["logo"]
             );
         }
 
@@ -149,6 +156,21 @@ class NflHandler extends ContainerAware
         }
 
         return $games;
+    }
+
+    public function getGameFileDir() {
+        $dir = sprintf("%s/NFL%d.%s%02d.%s%s"
+            , $this->container->getParameter("nfl_path")
+            , $this->year
+            , $this->type == "pre" ? "PS" : "W"
+            , $this->week
+            , $this->week >= 18 ? $this->playoff."." : ""
+            , $this->conds ? "CG" : "whole"
+        );
+        if (!is_dir($dir)) {
+            mkdir($dir);
+        }
+        return $dir;
     }
 
     public function searchGameUrl($game) {
@@ -193,19 +215,8 @@ class NflHandler extends ContainerAware
     }
 
     public function streamGame($game, $shift = false) {
-        //1.creating dir
-        $dir = sprintf("%s/NFL%d.%s%02d.%s%s"
-            , $this->container->getParameter("nfl_path")
-            , $this->year
-            , $this->type == "pre" ? "PS" : "W"
-            , $this->week
-            , $this->week >= 18 ? $this->playoff."." : ""
-            , $this->conds ? "CG" : "whole"
-        );
-        if (!is_dir($dir)) {
-            mkdir($dir);
-        }
-        //2.getting file with m3u8 urls
+
+        //1.getting file with m3u8 urls
         $file = sprintf("%s/%s/%s_%d_%02d_m3u8_%d.txt"
             , $this->container->getParameter("nfl_path")
             , $this->container->getParameter("nfl_data_dir")
@@ -217,10 +228,12 @@ class NflHandler extends ContainerAware
         if (file_exists($file)) {
             $currentFile  = file_get_contents($file);
         } else {
-            throw new FileNotFoundException("URI file doesn't exists");
+            throw new FileNotFoundException("Games URI file doesn't exists");
         }
 
-        $mkv = sprintf("%s/%s.mkv"
+        $dir = $this->getGameFileDir();
+        $mkv = sprintf(
+            "%s/%s.mkv"
             , $dir
             , $game['file_name']
         );

@@ -41,9 +41,8 @@ class UrlsCommand extends NflCommand
             ;
 */
             foreach ($games as $game) {
-                $status = $this->nflHandler->searchGameUrl($game);
-
                 $output->write($game['file_name']."\t\t:: ");
+                $status = $this->nflHandler->searchGameUrl($game);
 
                 switch ($status) {
                     case NflHandler::GAME_NOT_STARTED:

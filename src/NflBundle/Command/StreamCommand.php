@@ -36,6 +36,7 @@ class StreamCommand extends NflCommand
                 'Time shift for streaming',
                 null
             )
+/*
             ->addOption(
                 'topic',
                 null,
@@ -43,6 +44,7 @@ class StreamCommand extends NflCommand
                 'Create topic for tracker',
                 true
             )
+*/
         ;
 
         parent::configure();
@@ -53,7 +55,7 @@ class StreamCommand extends NflCommand
         $games      = $this->nflHandler->getGames();
         $sgame      = $input->getOption("game");
         $shift      = $input->getOption("shift");
-        $is_topic   = $input->getOption("topic");
+//        $is_topic   = $input->getOption("topic");
 
 
         if ($games) {
@@ -88,7 +90,7 @@ class StreamCommand extends NflCommand
 
                 }
 
-                if ($is_topic) {
+                if (!$this->nflHandler->conds){//$is_topic) {
                     $topic = $this
                         ->getContainer()
                         ->get('templating')

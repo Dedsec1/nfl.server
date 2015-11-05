@@ -176,10 +176,7 @@ class NflHandler extends ContainerAware
         return $dir;
     }
 
-    public function searchGameUrl($game) {
-        $currentFile = "";
-        $currentDate = time();//mktime(0, 0, 0, date('m'), date('d'), date('Y'));
-        $date = new \DateTime($game['time'], new \DateTimeZone("America/New_York"));
+    private function getGameUriFile() {
         $file = sprintf("%s/%s/%s_%d_%02d_m3u8_%d.txt"
             , $this->container->getParameter("nfl_path")
             , $this->container->getParameter("nfl_data_dir")
@@ -189,9 +186,18 @@ class NflHandler extends ContainerAware
             , $this->qlty
         );
 
-        if (file_exists($file)) {
-            $currentFile  = file_get_contents($file);
+        if (!file_exists($file)) {
+            file_put_contents($file, "");
         }
+        return $file;
+    }
+
+    public function searchGameUrl($game) {
+
+        $currentDate = time();//mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+        $date = new \DateTime($game['time'], new \DateTimeZone("America/New_York"));
+        $file = $this->getGameUriFile();
+        $currentFile = file_get_contents($file);
 
         if ($currentDate < $date->getTimestamp()) {
             return self::GAME_NOT_STARTED;
@@ -218,23 +224,8 @@ class NflHandler extends ContainerAware
     }
 
     public function streamGame(&$game, $shift = false, $getInfo = false) {
-
-        //1.getting file with m3u8 urls
-        $file = sprintf("%s/%s/%s_%d_%02d_m3u8_%d.txt"
-            , $this->container->getParameter("nfl_path")
-            , $this->container->getParameter("nfl_data_dir")
-            , $this->conds ? "conds" : "whole"
-            , $this->year
-            , $this->week
-            , $this->qlty
-        );
-        if (file_exists($file)) {
-            $currentFile  = file_get_contents($file);
-        } else {
-            throw new FileNotFoundException("Games URI file doesn't exists");
-        }
-
-        $dir = $this->getGameFileDir();
+        $currentFile = file_get_contents($this->getGameUriFile());
+        $dir         = $this->getGameFileDir();
         $mkv = sprintf(
             "%s/%s.mkv"
             , $dir

@@ -17,6 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class StreamCommand extends NflCommand
 {
+    public $isStreaming = false;
+
     protected function configure()
     {
         $this
@@ -117,6 +119,7 @@ class StreamCommand extends NflCommand
                 }
 
                 if ($status === NflHandler::GAME_STREAMING) {
+                    $this->isStreaming = true;
                     break;
                 }
             }

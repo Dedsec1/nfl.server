@@ -49,3 +49,10 @@ services:
           - [setRatingHandler, ["@nfl.lib.ratinghandler"]]
       tags:
           -  { name: console.command }
+
+  nfl.command.cron:
+      class: NflBundle\Command\CronCommand
+      arguments:
+          - @nfl.lib.nflhandler
+      tags:
+          -  { name: console.command }

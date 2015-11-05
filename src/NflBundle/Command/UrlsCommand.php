@@ -83,7 +83,7 @@ class UrlsCommand extends NflCommand
                 ;
 */
             }
-
+            return 1;
         }
     }
 }

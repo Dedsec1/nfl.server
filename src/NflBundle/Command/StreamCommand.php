@@ -67,7 +67,11 @@ class StreamCommand extends NflCommand
 
 
                 $output->write($game['file_name'] . "\t\t:: ");
-                $status = $this->nflHandler->streamGame($game, $is_shift ? $shift : false);
+                $status = $this->nflHandler->streamGame(
+                    $game
+                    , $is_shift ? $shift : false
+                    , !$this->nflHandler->conds
+                );
 
                 switch ($status) {
                     case NflHandler::GAME_MD5_NOT_FOUND:
@@ -77,7 +81,7 @@ class StreamCommand extends NflCommand
                         if ($is_shift) {
                             $output->writeln("<fg=cyan>continue streaming from ".$shift."</>");
                         } else {
-                            $output->writeln("<fg=cyan>Game streaming...</>");
+                            $output->writeln("<fg=cyan>start game streaming...</>");
                         }
                         break;
                     case NflHandler::GAME_FILE_EXISTS:

@@ -134,7 +134,10 @@ class NflHandler extends ContainerAware
                 "score"     => sprintf("%d - %d", $game->away['p'], $game->home['p']),
 
                 "logo_away" => NflTeams::$teams[$away]["logo"],
-                "logo_home" => NflTeams::$teams[$home]["logo"]
+                "logo_home" => NflTeams::$teams[$home]["logo"],
+
+                //video info
+                "duration"  => null
             );
         }
 
@@ -214,7 +217,7 @@ class NflHandler extends ContainerAware
 
     }
 
-    public function streamGame($game, $shift = false) {
+    public function streamGame(&$game, $shift = false, $getInfo = false) {
 
         //1.getting file with m3u8 urls
         $file = sprintf("%s/%s/%s_%d_%02d_m3u8_%d.txt"
@@ -238,24 +241,31 @@ class NflHandler extends ContainerAware
             , $game['file_name']
         );
 
-        if (!file_exists($mkv) || $shift) {
-            $pattern = preg_quote($game['game_id'], '/');
-            // finalise the regular expression, matching the whole line
-            $pattern = "/^.*$pattern.*\$/m";
+        $pattern = preg_quote($game['game_id'], '/');
+        // finalise the regular expression, matching the whole line
+        $pattern = "/^.*$pattern.*\$/m";
 
-            if (preg_match_all($pattern, $currentFile, $matches)) {
-                $url = implode("\n", $matches[0]);
-                $url = trim(preg_replace('/\s+/', '', $url));
+        if (preg_match_all($pattern, $currentFile, $matches)) {
+            $url = implode("\n", $matches[0]);
+            $url = trim(preg_replace('/\s+/', '', $url));
 
+            if ($getInfo || !file_exists($mkv) || $shift) {
                 //get md5
                 $md5 = $this->nflProvider->getMD5($game['id']);
                 if ($md5 == null) {
                     return self::GAME_MD5_NOT_FOUND;
                 }
+            }
 
+            if ($getInfo) {
+                //get video duration
+                $this->getVideoInfo($game, $url . "?" . $md5);
+            }
+
+            if (!file_exists($mkv) || $shift) {
                 if ($shift) {
                     Utils::stream(
-                        $url."?".$md5
+                        $url . "?" . $md5
                         , sprintf("%s/%s2.mkv", $dir, $game['file_name'])
                         , $shift
                         , $this->container->getParameter("nfl_ffmpeg")
@@ -263,7 +273,7 @@ class NflHandler extends ContainerAware
                     );
                 } else {
                     Utils::stream(
-                        $url."?".$md5
+                        $url . "?" . $md5
                         , $mkv
                         , null
                         , $this->container->getParameter("nfl_ffmpeg")
@@ -272,11 +282,22 @@ class NflHandler extends ContainerAware
                 }
                 return self::GAME_STREAMING;
             } else {
-                return self::GAME_URL_NOT_FOUND;
+                return self::GAME_FILE_EXISTS;
             }
         } else {
-            return self::GAME_FILE_EXISTS;
+            return self::GAME_URL_NOT_FOUND;
         }
+    }
+
+    private function getVideoInfo(&$game, $url) {
+        $info =  Utils::probe($url, $this->container->getParameter("nfl_ffmpeg"));
+
+        //get video duration
+        $search='/Duration: (.*?),/';
+        preg_match($search, $info, $matches);
+        $explode = explode('.', $matches[1]);
+
+        $game["duration"] = $explode[0];
     }
 
     private function setGameOptions() {

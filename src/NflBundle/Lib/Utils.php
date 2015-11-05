@@ -77,7 +77,7 @@ class Utils
                 , $mkv
             );
         }
-        //print_r($cmd);
+//        print_r($cmd);
 
         if (strtoupper(substr(PHP_OS, 0, 3) === 'WIN')) {
             //print_r("WIN");
@@ -86,6 +86,14 @@ class Utils
             //print_r("Linux");
             exec($cmd);
         }
+    }
+
+    public static function probe($url, $ffmpeg) {
+        $cmd = sprintf("%s/ffprobe \"%s\" 2>&1"
+            , $ffmpeg
+            , $url
+        );
+        return shell_exec($cmd);
     }
 
     public static function sendPostRequest($url, $fields = array(), $cookie = null, $cookiejar) {

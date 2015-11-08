@@ -121,10 +121,12 @@ class Utils
         $retValue = curl_exec($ch);
 
         // Check for errors and display the error message
+/*
         if($errno = curl_errno($ch)) {
             $error_message = curl_strerror($errno);
             echo "cURL error ({$errno}):\n {$error_message}";
         }
+*/
         curl_close($ch);
 
         return $retValue;
@@ -157,11 +159,12 @@ class Utils
         $retValue = curl_exec($ch);
 
         // Check for errors and display the error message
+/*
         if($errno = curl_errno($ch)) {
             $error_message = curl_strerror($errno);
             echo "cURL error ({$errno}):\n {$error_message}";
         }
-
+*/
 
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($retValue, 0, $header_size);

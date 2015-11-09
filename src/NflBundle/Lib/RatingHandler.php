@@ -39,8 +39,10 @@ class RatingHandler extends ContainerAware
 
     public function getRating() {
         $res = array(
-            "finished"  => array(),
-            "future"    => array()
+            "finished"      => array(),
+            "future"        => array(),
+            "start_date"    => $this->start_date,
+            "end_date"      => $this->end_date,
         );
 
         $finished = $this->getRatingJson(2);

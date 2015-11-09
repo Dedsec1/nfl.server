@@ -57,6 +57,7 @@ class StreamCommand extends NflCommand
         $games      = $this->nflHandler->getGames();
         $sgame      = $input->getOption("game");
         $shift      = $input->getOption("shift");
+
 //        $is_topic   = $input->getOption("topic");
 
 
@@ -72,7 +73,6 @@ class StreamCommand extends NflCommand
                 $status = $this->nflHandler->streamGame(
                     $game
                     , $is_shift ? $shift : false
-                    , !$this->nflHandler->conds
                 );
 
                 switch ($status) {
@@ -94,28 +94,6 @@ class StreamCommand extends NflCommand
                         $output->writeln("<error>Game URL NOT FOUND</error>");
                         break;
 
-                }
-
-                if (!$this->nflHandler->conds){//$is_topic) {
-                    $topic = $this
-                        ->getContainer()
-                        ->get('templating')
-                        ->render(
-                            "NflBundle:Default:topic.html.twig"
-                            , array(
-                                'game' => $game,
-                                'nfl'  => $this->nflHandler
-                            )
-                        )
-                    ;
-                    file_put_contents(
-                        sprintf(
-                            "%s/%s.txt"
-                            , $this->nflHandler->getGameFileDir()
-                            , $game['file_name']
-                        )
-                        , $topic
-                    );
                 }
 
                 if ($status === NflHandler::GAME_STREAMING) {

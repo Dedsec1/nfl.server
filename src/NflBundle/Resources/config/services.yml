@@ -8,15 +8,18 @@ services:
     calls:
         - [setContainer, ["@service_container"]]
 
+  nfl.lib.ratinghandler:
+    class: NflBundle\Lib\RatingHandler
+    calls:
+        - [setContainer, ["@service_container"]]
+
   nfl.lib.nflhandler:
     class: NflBundle\Lib\NflHandler
     arguments:
         - @nfl.lib.n2goprovider
-    calls:
-        - [setContainer, ["@service_container"]]
-
-  nfl.lib.ratinghandler:
-    class: NflBundle\Lib\RatingHandler
+        - @nfl.lib.ratinghandler
+        - @templating
+        - @event_dispatcher
     calls:
         - [setContainer, ["@service_container"]]
 
@@ -45,8 +48,6 @@ services:
       class: NflBundle\Command\RatingCommand
       arguments:
           - @nfl.lib.nflhandler
-      calls:
-          - [setRatingHandler, ["@nfl.lib.ratinghandler"]]
       tags:
           -  { name: console.command }
 

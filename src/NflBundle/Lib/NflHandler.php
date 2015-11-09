@@ -12,6 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 use NflBundle\Lib\Utils;
 use NflBundle\Lib\NflTeams;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Templating\EngineInterface;
 
 class NflHandler extends ContainerAware
 {
@@ -39,10 +41,22 @@ class NflHandler extends ContainerAware
     const GAME_MD5_NOT_FOUND    = 7;
 
     protected $nflProvider;
+    protected $dispatcher;
+    protected $ratingHandler;
+    protected $templating;
 
-    public function __construct(NflProviderInterface $provider)
+    public function __construct(
+        NflProviderInterface $provider
+        , RatingHandler $handler
+        , EngineInterface $templating
+        , EventDispatcherInterface $dispatcher
+
+    )
     {
-        $this->nflProvider = $provider;
+        $this->nflProvider      = $provider;
+        $this->ratingHandler    = $handler;
+        $this->templating       = $templating;
+        $this->dispatcher       = $dispatcher;
     }
 
     public function init($year, $week, $type, $conds, $qlty)
@@ -65,6 +79,11 @@ class NflHandler extends ContainerAware
         $this->qlty     = $qlty;
 
         $this->setGameOptions();
+
+        $this->ratingHandler->init(
+            $this->year
+            , $this->week
+        );
     }
 
     public function getGames($sort = false)
@@ -161,35 +180,28 @@ class NflHandler extends ContainerAware
         return $games;
     }
 
-    public function getGameFileDir() {
-        $dir = sprintf("%s/NFL%d.%s%02d.%s%s"
-            , $this->container->getParameter("nfl_path")
-            , $this->year
-            , $this->type == "pre" ? "PS" : "W"
-            , $this->week
-            , $this->week >= 18 ? $this->playoff."." : ""
-            , $this->conds ? "CG" : "whole"
-        );
-        if (!is_dir($dir)) {
-            mkdir($dir);
-        }
-        return $dir;
-    }
-
-    private function getGameUriFile() {
-        $file = sprintf("%s/%s/%s_%d_%02d_m3u8_%d.txt"
-            , $this->container->getParameter("nfl_path")
-            , $this->container->getParameter("nfl_data_dir")
-            , $this->conds ? "conds" : "whole"
-            , $this->year
-            , $this->week
-            , $this->qlty
+    public function getRating() {
+        $rating = $this->ratingHandler->getRating();
+        $topic = $this
+            ->templating
+            ->render(
+                "NflBundle:Console:rating.html.twig"
+                , array(
+                    'rating' => $rating
+                )
+            )
+        ;
+        file_put_contents(
+            sprintf(
+                "%s/%d_rating_%02d.txt"
+                , $this->container->getParameter("nfl_path")
+                , $this->year
+                , $this->week
+            )
+            , $topic
         );
 
-        if (!file_exists($file)) {
-            file_put_contents($file, "");
-        }
-        return $file;
+        return $rating;
     }
 
     public function searchGameUrl($game) {
@@ -223,7 +235,7 @@ class NflHandler extends ContainerAware
 
     }
 
-    public function streamGame(&$game, $shift = false, $getInfo = false) {
+    public function streamGame(&$game, $shift = false) {
         $currentFile = file_get_contents($this->getGameUriFile());
         $dir         = $this->getGameFileDir();
         $mkv = sprintf(
@@ -240,20 +252,16 @@ class NflHandler extends ContainerAware
             $url = implode("\n", $matches[0]);
             $url = trim(preg_replace('/\s+/', '', $url));
 
-            if ($getInfo || !file_exists($mkv) || $shift) {
+            //render topic template
+            $this->renderTemplate($game, $url);
+
+            if (!file_exists($mkv) || $shift) {
                 //get md5
                 $md5 = $this->nflProvider->getMD5($game['id']);
                 if ($md5 == null) {
                     return self::GAME_MD5_NOT_FOUND;
                 }
-            }
 
-            if ($getInfo) {
-                //get video duration
-                $this->getVideoInfo($game, $url . "?" . $md5);
-            }
-
-            if (!file_exists($mkv) || $shift) {
                 if ($shift) {
                     Utils::stream(
                         $url . "?" . $md5
@@ -280,6 +288,71 @@ class NflHandler extends ContainerAware
         }
     }
 
+    /**
+     * private methods
+     *
+     */
+
+    private function getGameFileDir() {
+        $dir = sprintf("%s/NFL%d.%s%02d.%s%s"
+            , $this->container->getParameter("nfl_path")
+            , $this->year
+            , $this->type == "pre" ? "PS" : "W"
+            , $this->week
+            , $this->week >= 18 ? $this->playoff."." : ""
+            , $this->conds ? "CG" : "whole"
+        );
+        if (!is_dir($dir)) {
+            mkdir($dir);
+        }
+        return $dir;
+    }
+
+    private function getGameUriFile() {
+        $file = sprintf("%s/%s/%s_%d_%02d_m3u8_%d.txt"
+            , $this->container->getParameter("nfl_path")
+            , $this->container->getParameter("nfl_data_dir")
+            , $this->conds ? "conds" : "whole"
+            , $this->year
+            , $this->week
+            , $this->qlty
+        );
+
+        if (!file_exists($file)) {
+            file_put_contents($file, "");
+        }
+        return $file;
+    }
+    private function renderTemplate(&$game, $url) {
+        if (!$this->conds){
+
+            //get md5
+            $md5 = $this->nflProvider->getMD5($game['id']);
+            if ($md5 != null) {
+                //get video duration
+                $this->getVideoInfo($game, $url . "?" . $md5);
+            }
+
+            $topic = $this
+                ->templating
+                ->render(
+                    "NflBundle:Console:whole.html.twig"
+                    , array(
+                        'game' => $game,
+                        'nfl'  => $this
+                    )
+                )
+            ;
+            file_put_contents(
+                sprintf(
+                    "%s/%s.txt"
+                    , $this->getGameFileDir()
+                    , $game['file_name']
+                )
+                , $topic
+            );
+        }
+    }
     private function getVideoInfo(&$game, $url) {
         $info =  Utils::probe($url, $this->container->getParameter("nfl_ffmpeg"));
 

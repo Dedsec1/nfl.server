@@ -147,6 +147,7 @@ class NflHandler extends ContainerAware
 
                 "away"      => NflTeams::$teams[$away]["city"]." ".NflTeams::$teams[$away]["name"],
                 "home"      => NflTeams::$teams[$home]["city"]." ".NflTeams::$teams[$home]["name"],
+
                 "game"      => $away."@".$home,
                 "id"        => intval($game["id"]),
                 "elias"     => strtolower($game["elias"]),
@@ -202,6 +203,80 @@ class NflHandler extends ContainerAware
         );
 
         return $rating;
+    }
+
+    public function getSchedule() {
+        $date = null;
+        $time = null;
+        $tzKiev     = new \DateTimeZone('Europe/Kiev');
+        $tzMoscow   = new \DateTimeZone('Europe/Moscow');//Moscow
+        $tzEST      = new \DateTimeZone('America/New_York');
+        $games = $this->getGames(true);
+
+        $schedule = array(
+            "byes" => array(),
+            "week" => array()
+        );
+
+        if ($games) {
+            foreach (NflTeams::$teams as $key => $values) {
+                $exists = false;
+                if (($values["city"] != "") && ($values["name"] != "")) {
+                    foreach ($games as $game) {
+                        $exists = $exists || (strpos($game['game'], $key) !== false);
+                    }
+                    if (!$exists) {
+                        $schedule["byes"][] = NflTeams::$teams[$key]["city"] . " " . NflTeams::$teams[$key]["name"];
+                    }
+                }
+            }
+
+            foreach ($games as $game) {
+                if (strcmp($game['d'], $date) != 0) {
+                    $date = $game['d'];
+                    $schedule["week"]["$date"] = array();
+                }
+
+                $gtime = $game["time"];
+                if (strcmp(strtotime($gtime), $time) != 0) {
+                    $time = strtotime($gtime);
+
+                    $timeKyiv   = new \DateTime($gtime, $tzEST);
+                    $timeKyiv->setTimezone($tzKiev);
+                    $timeMoscow = new \DateTime($gtime, $tzEST);
+                    $timeMoscow->setTimezone($tzMoscow);
+                    $timeEST    = new \DateTime($gtime, $tzEST);
+
+                    $schedule["week"]["$date"]["$time"] = array(
+                        "timeEST"       => $timeEST->format("H:i"),
+                        "timeKyiv"      => $timeKyiv->format("H:i"),
+                        "timeMoscow"    => $timeMoscow->format("H:i"),
+                        "games"         => array()
+                    );
+                }
+                $schedule["week"]["$date"]["$time"]["games"][] = sprintf("%s @ %s", $game["away"], $game["home"]);
+
+            }
+        }
+        $topic = $this
+            ->templating
+            ->render(
+                "NflBundle:Console:schedule.html.twig"
+                , array(
+                    'schedule' => $schedule
+                )
+            )
+        ;
+        file_put_contents(
+            sprintf(
+                "%s/%d_schedule_%02d.txt"
+                , $this->container->getParameter("nfl_path")
+                , $this->year
+                , $this->week
+            )
+            , $topic
+        );
+        return $schedule;
     }
 
     public function searchGameUrl($game) {

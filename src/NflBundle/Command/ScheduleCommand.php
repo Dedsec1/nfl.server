@@ -27,47 +27,34 @@ class ScheduleCommand extends NflCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $date = null;
-        $time = null;
-        $tzKiev     = new \DateTimeZone('Europe/Kiev');
-        $tzMoscow   = new \DateTimeZone('Europe/Moscow');//Moscow
-        $tzEST      = new \DateTimeZone('America/New_York');
+        $schedule = $this->nflHandler->getSchedule();
+        if ($schedule) {
+            $output->writeln(
+                sprintf("<info><info>[size=12][color=gray][i] Byes: %s [/i][/color][/size]</info>", join(", ", $schedule["byes"]))
+            );
 
-        $games = $this->nflHandler->getGames(true);
-        if ($games) {
-            foreach ($games as $game) {
-                if (strcmp($game['d'], $date) != 0) {
-                    $date = $game['d'];
-                    $output->writeln(
-                        sprintf("<info>\r\n[size=16][font=\"Georgia\"][color=darkblue][b] %s [/b][/color][/font][/size]</info>", $date)
-                    );
-                }
-                $gtime = $game["time"];
-                if (strcmp(strtotime($gtime), $time) != 0) {
-                    $time = strtotime($gtime);
 
-                    $timeKyiv   = new \DateTime($gtime, $tzEST);
-                    $timeKyiv->setTimezone($tzKiev);
-                    $timeMoscow = new \DateTime($gtime, $tzEST);
-                    $timeMoscow->setTimezone($tzMoscow);
-                    $timeEST    = new \DateTime($gtime, $tzEST);
-
+            foreach ($schedule["week"] as $date => $times) {
+                $output->writeln(
+                    sprintf("<info>\r\n[size=16][font=\"Georgia\"][color=darkblue][b] %s [/b][/color][/font][/size]</info>", $date)
+                );
+                foreach ($times as $time) {
                     $output->writeln(
                         sprintf("<info>[size=14][font=\"Georgia\"][color=gray][i][%s EST] [%s Kiev] [%s Moscow][/i][/color][/font][/size]</info>"
-                            , $timeEST->format("H:i")
-                            , $timeKyiv->format("H:i")
-                            , $timeMoscow->format("H:i")
+                            , $time["timeEST"]
+                            , $time["timeKyiv"]
+                            , $time["timeMoscow"]
                         )
                     );
+                    foreach ($time["games"] as $game) {
+                        $output->writeln(
+                            sprintf("<fg=cyan>[size=14][color=indigo] %s [/color][/size]</>", $game)
+                        );
+                    }
                 }
-                $output->writeln(
-                    sprintf("<fg=cyan>[size=14][color=indigo] %s @ %s [/color][/size]</>",
-                        $game["away"],
-                        $game["home"]
-                    )
-                );
             }
         }
+
     }
 
 }

@@ -9,15 +9,13 @@
 namespace NflBundle\Lib;
 
 use Symfony\Component\DependencyInjection\ContainerAware;
-
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Templating\EngineInterface;
-use Symfony\Component\EventDispatcher\GenericEvent;
+use Symfony\Component\Templating\EngineInterface;;
 
 use NflBundle\Lib\Provider\NflProviderInterface;
 use NflBundle\Lib\Utils\Utils;
 use NflBundle\Lib\Utils\NflTeams;
+use NflBundle\Lib\Event\GameStatusEvent;
 
 class NflHandler extends ContainerAware
 {
@@ -34,15 +32,6 @@ class NflHandler extends ContainerAware
     public static $SERVER_ARCH 	= [82, 84];
     const SERVER_START 	= 200;//80
     const SERVER_END 	= 220;//170
-
-    const GAME_NOT_STARTED      = 0;
-    const GAME_IS_RUNNING       = 1;
-    const GAME_URL_FOUND        = 2;
-    const GAME_URL_EXISTS       = 3;
-    const GAME_URL_NOT_FOUND    = 4;
-    const GAME_FILE_EXISTS      = 5;
-    const GAME_STREAMING        = 6;
-    const GAME_MD5_NOT_FOUND    = 7;
 
     protected $nflProvider;
     protected $dispatcher;
@@ -291,12 +280,12 @@ class NflHandler extends ContainerAware
         $currentFile = file_get_contents($file);
 
         if ($currentDate < $date->getTimestamp()) {
-            return self::GAME_NOT_STARTED;
+            $this->sendGameStatus(GameStatusEvent::GAME_NOT_STARTED, $game);
         } elseif (round(($currentDate - $date->getTimestamp())/3600, 1) < 3) {
-            return self::GAME_IS_RUNNING;
+            $this->sendGameStatus(GameStatusEvent::GAME_IS_RUNNING, $game);
         } else {
             if (strpos($currentFile, $game['game_id']) > 0) {
-                return self::GAME_URL_EXISTS;
+                $this->sendGameStatus(GameStatusEvent::GAME_URL_EXISTS, $game);
             } else {
                 $url = $this->findGameUrl(sprintf("%s_1_%d", $game['game_id'], $this->qlty));
                 if (strlen($url) == 0) {
@@ -305,16 +294,16 @@ class NflHandler extends ContainerAware
 
                 if (strlen($url) > 0) {
                     file_put_contents($file, $url."\r\n", FILE_APPEND);
-                    return self::GAME_URL_FOUND;
+                    $this->sendGameStatus(GameStatusEvent::GAME_URL_FOUND, $game);
                 } else {
-                    return self::GAME_URL_NOT_FOUND;
+                    $this->sendGameStatus(GameStatusEvent::GAME_URL_NOT_FOUND, $game);;
                 }
             }
         }
 
     }
 
-    public function streamGame(&$game, $shift = false) {
+    public function streamGame(&$game) {
         $currentFile = file_get_contents($this->getGameUriFile());
         $dir         = $this->getGameFileDir();
         $mkv = sprintf(
@@ -334,21 +323,22 @@ class NflHandler extends ContainerAware
             //render topic template
             $this->renderTemplate($game, $url);
 
-            if (!file_exists($mkv) || $shift) {
+            if (!file_exists($mkv) || ($game["shift"] != false)) {
 
                 //get md5
                 $md5 = $this->nflProvider->getMD5($game['id']);
                 if ($md5 == null) {
-                    return self::GAME_MD5_NOT_FOUND;
+                    $this->sendGameStatus(GameStatusEvent::GAME_MD5_NOT_FOUND, $game);
+                    return 0;
                 }
 
-                $this->sendProgressNotification($game, self::GAME_STREAMING);
+                $this->sendGameStatus(GameStatusEvent::GAME_STREAMING, $game);
 
-                if ($shift) {
+                if ($game["shift"] != false) {
                     Utils::stream(
                         $url . "?" . $md5
                         , sprintf("%s/%s2.mkv", $dir, $game['file_name'])
-                        , $shift
+                        , $game["shift"]
                         , $this->container->getParameter("nfl_ffmpeg")
                         , $this->container->getParameter("nfl_acodec")
                     );
@@ -361,13 +351,14 @@ class NflHandler extends ContainerAware
                         , $this->container->getParameter("nfl_acodec")
                     );
                 }
-                return self::GAME_STREAMING;
+                return 1;
             } else {
-                return self::GAME_FILE_EXISTS;
+                $this->sendGameStatus(GameStatusEvent::GAME_FILE_EXISTS, $game);
             }
         } else {
-            return self::GAME_URL_NOT_FOUND;
+            $this->sendGameStatus(GameStatusEvent::GAME_URL_NOT_FOUND, $game);
         }
+        return 0;
     }
 
     /**
@@ -546,14 +537,8 @@ class NflHandler extends ContainerAware
         return $url;
     }
 
-    private function sendProgressNotification($game, $status) {
-        $event = new GenericEvent(
-            "NFL Handler Progress",
-            array(
-                'game'      => $game,
-                'status'    => $status
-            )
-        );
-        $this->dispatcher->dispatch("nfl.progress", $event);
+    private function sendGameStatus($status, $game) {
+        $event = new GameStatusEvent($status, $game);
+        $this->dispatcher->dispatch("nfl.game_status", $event);
     }
 }

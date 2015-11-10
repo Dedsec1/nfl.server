@@ -8,14 +8,11 @@
 
 namespace NflBundle\Command;
 
-use NflBundle\Lib\NflHandler;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\EventDispatcher\GenericEvent;
 
 class StreamCommand extends NflCommand
 {
@@ -59,7 +56,6 @@ class StreamCommand extends NflCommand
         $games      = $this->nflHandler->getGames();
         $sgame      = $input->getOption("game");
         $shift      = $input->getOption("shift");
-
 //        $is_topic   = $input->getOption("topic");
 
 
@@ -70,40 +66,9 @@ class StreamCommand extends NflCommand
                 }
                 $is_shift = (stripos($game['file_name'], $sgame) !== false) && ($shift != null);
 
-                $dispatcher = $this->getContainer()->get("event_dispatcher");
-                $dispatcher->addListener("nfl.progress", function(GenericEvent $event) {
-                    $output = new ConsoleOutput();
-                    $output->writeln("xsba::".$event->getArgument("status"));
-                });
+                $game['shift'] = $is_shift ? $shift : false;
 
-                $output->write($game['file_name'] . "\t\t:: ");
-                $status = $this->nflHandler->streamGame(
-                    $game
-                    , $is_shift ? $shift : false
-                );
-
-                switch ($status) {
-                    case NflHandler::GAME_MD5_NOT_FOUND:
-                        $output->writeln("<error>MD5 not found, try again later</error>");
-                        break;
-                    case NflHandler::GAME_STREAMING:
-                        if ($is_shift) {
-                            $output->writeln("<fg=cyan>continue streaming from ".$shift."</>");
-                        } else {
-                            $output->writeln("<fg=cyan>start game streaming...</>");
-                        }
-                        break;
-                    case NflHandler::GAME_FILE_EXISTS:
-                        $output->writeln("<info>Game file already exists</info>");
-                        break;
-                    case NflHandler::GAME_URL_NOT_FOUND:
-                    default:
-                        $output->writeln("<error>Game URL NOT FOUND</error>");
-                        break;
-
-                }
-
-                if ($status === NflHandler::GAME_STREAMING) {
+                if ($this->nflHandler->streamGame($game)) {
                     $this->isStreaming = true;
                     break;
                 }

@@ -3,6 +3,11 @@ services:
 #        class: NflBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
 
+  nfl.event.listener:
+    class: NflBundle\Lib\EventListener\GameStatusEventListener
+    tags:
+        - { name: kernel.event_subscriber }
+
   nfl.lib.n2goprovider:
     class: NflBundle\Lib\Provider\N2GoProvider
     calls:

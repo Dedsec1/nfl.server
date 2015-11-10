@@ -6,7 +6,7 @@
  * Time: 16:39
  */
 
-namespace NflBundle\Lib;
+namespace NflBundle\Lib\Utils;
 
 
 class NflTeams

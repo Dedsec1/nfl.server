@@ -9,11 +9,15 @@
 namespace NflBundle\Lib;
 
 use Symfony\Component\DependencyInjection\ContainerAware;
-use NflBundle\Lib\Utils;
-use NflBundle\Lib\NflTeams;
+
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Templating\EngineInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
+
+use NflBundle\Lib\Provider\NflProviderInterface;
+use NflBundle\Lib\Utils\Utils;
+use NflBundle\Lib\Utils\NflTeams;
 
 class NflHandler extends ContainerAware
 {
@@ -331,11 +335,14 @@ class NflHandler extends ContainerAware
             $this->renderTemplate($game, $url);
 
             if (!file_exists($mkv) || $shift) {
+
                 //get md5
                 $md5 = $this->nflProvider->getMD5($game['id']);
                 if ($md5 == null) {
                     return self::GAME_MD5_NOT_FOUND;
                 }
+
+                $this->sendProgressNotification($game, self::GAME_STREAMING);
 
                 if ($shift) {
                     Utils::stream(
@@ -398,6 +405,7 @@ class NflHandler extends ContainerAware
         }
         return $file;
     }
+
     private function renderTemplate(&$game, $url) {
         if (!$this->conds){
 
@@ -428,6 +436,7 @@ class NflHandler extends ContainerAware
             );
         }
     }
+
     private function getVideoInfo(&$game, $url) {
         $info =  Utils::probe($url, $this->container->getParameter("nfl_ffmpeg"));
 
@@ -535,5 +544,16 @@ class NflHandler extends ContainerAware
         }
 
         return $url;
+    }
+
+    private function sendProgressNotification($game, $status) {
+        $event = new GenericEvent(
+            "NFL Handler Progress",
+            array(
+                'game'      => $game,
+                'status'    => $status
+            )
+        );
+        $this->dispatcher->dispatch("nfl.progress", $event);
     }
 }

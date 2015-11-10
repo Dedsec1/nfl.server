@@ -6,9 +6,10 @@
  * Time: 15:02
  */
 
-namespace NflBundle\Lib;
+namespace NflBundle\Lib\Provider;
 
 use Symfony\Component\DependencyInjection\ContainerAware;
+use NflBundle\Lib\Utils\Utils;
 
 class N2GoProvider extends ContainerAware implements NflProviderInterface
 {

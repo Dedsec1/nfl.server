@@ -12,8 +12,10 @@ use NflBundle\Lib\NflHandler;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 class StreamCommand extends NflCommand
 {
@@ -68,6 +70,11 @@ class StreamCommand extends NflCommand
                 }
                 $is_shift = (stripos($game['file_name'], $sgame) !== false) && ($shift != null);
 
+                $dispatcher = $this->getContainer()->get("event_dispatcher");
+                $dispatcher->addListener("nfl.progress", function(GenericEvent $event) {
+                    $output = new ConsoleOutput();
+                    $output->writeln("xsba::".$event->getArgument("status"));
+                });
 
                 $output->write($game['file_name'] . "\t\t:: ");
                 $status = $this->nflHandler->streamGame(

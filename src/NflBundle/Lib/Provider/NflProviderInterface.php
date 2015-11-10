@@ -6,7 +6,7 @@
  * Time: 15:00
  */
 
-namespace NflBundle\Lib;
+namespace NflBundle\Lib\Provider;
 
 
 interface  NflProviderInterface

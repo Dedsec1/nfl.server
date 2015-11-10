@@ -4,7 +4,7 @@ services:
 #        arguments: [@service_id, "plain_value", %parameter%]
 
   nfl.lib.n2goprovider:
-    class: NflBundle\Lib\N2GoProvider
+    class: NflBundle\Lib\Provider\N2GoProvider
     calls:
         - [setContainer, ["@service_container"]]
 

@@ -6,7 +6,7 @@
  * Time: 16:39
  */
 
-namespace NflBundle\Lib;
+namespace NflBundle\Lib\Utils;
 
 
 class Utils
@@ -81,7 +81,7 @@ class Utils
 
         if (strtoupper(substr(PHP_OS, 0, 3) === 'WIN')) {
             //print_r("WIN");
-            pclose(popen(escapeshellcmd("start cmd.exe /K " . $cmd), "r"));
+//            pclose(popen(escapeshellcmd("start cmd.exe /K " . $cmd), "r"));
         } else {
             //print_r("Linux");
             exec($cmd);

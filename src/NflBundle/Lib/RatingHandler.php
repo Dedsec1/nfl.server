@@ -9,6 +9,7 @@
 namespace NflBundle\Lib;
 
 use Symfony\Component\DependencyInjection\ContainerAware;
+use NflBundle\Lib\Utils\Utils;
 
 class RatingHandler extends ContainerAware
 {

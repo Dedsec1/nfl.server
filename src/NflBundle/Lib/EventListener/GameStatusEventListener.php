@@ -24,6 +24,7 @@ class GameStatusEventListener implements EventSubscriberInterface
 
     public function onStatusChange(GameStatusEvent $event)
     {
+/*
         $output = new ConsoleOutput();
         $game   = $event->getGame();
         $status = $event->getStatus();
@@ -69,5 +70,6 @@ class GameStatusEventListener implements EventSubscriberInterface
                 break;
 
         }
+*/
     }
 }

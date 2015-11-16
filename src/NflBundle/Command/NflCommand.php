@@ -15,6 +15,7 @@ use NflBundle\Lib\Event\GameStatusEvent;
 abstract class NflCommand extends ContainerAwareCommand
 {
     protected $nflHandler;
+    private static $listeningStatusEvent = false;
 
     public function __construct(NflHandler $nflHandler)
     {
@@ -24,8 +25,11 @@ abstract class NflCommand extends ContainerAwareCommand
 
     protected function initialize(InputInterface $input, OutputInterface $stdout)
     {
-        $dispatcher = $this->getContainer()->get("event_dispatcher");
-        $dispatcher->addListener("nfl.game_status", array($this, 'onStatusChange'));
+        if (!self::$listeningStatusEvent) {
+            $dispatcher = $this->getContainer()->get("event_dispatcher");
+            $dispatcher->addListener("nfl.game_status", array($this, 'onStatusChange'));
+            self::$listeningStatusEvent = true;
+        }
 
         $this->nflHandler->init(
             $input->getOption("year")

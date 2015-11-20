@@ -3,6 +3,14 @@ services:
 #        class: NflBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
 
+  nfl.event.exceptions.listener:
+    class: NflBundle\Lib\EventListener\ConsoleExceptionListener
+    arguments:
+        logger: "@logger"
+    tags:
+        - { name: monolog.logger, channel: errors }
+        - { name: kernel.event_listener, event: console.exception }
+
   nfl.event.listener:
     class: NflBundle\Lib\EventListener\GameStatusEventListener
     tags:

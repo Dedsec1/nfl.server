@@ -23,7 +23,7 @@ monolog:
             verbosity_levels:
                 VERBOSITY_VERBOSE: INFO
                 VERBOSITY_VERY_VERBOSE: DEBUG
-            channels: ["!doctrine"]
+            channels: ["!doctrine", "!errors"]
         console_very_verbose:
             type:   console
             bubble: false
@@ -32,6 +32,11 @@ monolog:
                 VERBOSITY_VERY_VERBOSE: NOTICE
                 VERBOSITY_DEBUG: DEBUG
             channels: ["doctrine"]
+        errors:
+            level:  error
+            type:   stream
+            path:   "%kernel.logs_dir%/error.log"
+            channels: ["errors"]
         # uncomment to get logging in your browser
         # you may have to allow bigger header sizes in your Web server configuration
         #firephp:

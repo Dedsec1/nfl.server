@@ -1,3 +1,11 @@
-nfl_homepage:
-    path:     /hello/{name}
-    defaults: { _controller: NflBundle:Default:index }
+#nfl_nfl:
+#    path: /nfl/{year}/{week}
+#    type: rest
+#    defaults: { _controller: NflBundle:Nfl:test }
+
+nfl_nfl:
+    resource: "@NflBundle/Controller/"
+    type: annotation
+    prefix: /nfl
+    defaults: {_format: json}
+

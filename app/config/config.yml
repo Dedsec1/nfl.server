@@ -79,3 +79,36 @@ swiftmailer:
     password:  "%mailer_password%"
     spool:     { type: memory }
 
+nelmio_cors:
+    defaults:
+        allow_credentials: false
+        allow_origin: ['*']
+        allow_headers: ['X-Custom-Auth']
+        allow_methods: ['POST', 'PUT', 'GET', 'DELETE']
+        max_age: 3600
+        hosts: []
+        origin_regex: false
+
+fos_rest:
+    param_fetcher_listener: true
+    body_listener: true
+    format_listener: true
+    view:
+        view_response_listener: 'force'
+        formats:
+            xml: true
+            json : true
+        templating_formats:
+            html: true
+        force_redirects:
+            html: true
+        failed_validation: HTTP_BAD_REQUEST
+        default_engine: twig
+    routing_loader:
+        default_format: json
+        include_format: false
+
+nelmio_api_doc:
+    sandbox:
+        request_format:
+            method: accept_header

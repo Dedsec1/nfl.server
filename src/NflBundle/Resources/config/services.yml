@@ -70,3 +70,12 @@ services:
           - @nfl.lib.nflhandler
       tags:
           -  { name: console.command }
+
+  nfl.controller.nfl:
+      class: NflBundle\Controller\NflController
+      arguments:
+          - @nfl.lib.nflhandler
+      calls:
+        - [setContainer, ["@service_container"]]
+
+

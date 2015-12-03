@@ -25,3 +25,9 @@ monolog:
             level: debug
         console:
             type:  console
+            channels: ["!errors"]
+        errors:
+            level:  error
+            type:   stream
+            path:   "%kernel.logs_dir%/error.log"
+            channels: ["errors"]

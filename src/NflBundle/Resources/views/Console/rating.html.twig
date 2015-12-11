@@ -1,9 +1,9 @@
-[color=darkred][size=14][b]Finished games[/b][/size][/color]
+[color=darkred][size=120][b]Finished games[/b][/size][/color]
 {% for game in rating.finished %}
-[size=14][color=indigo]{{ game.away_team }} @ {{ game.home_team }} [/color][/size] [color=darkred][size=14][b] {{ game.gex }} [/b][/size][/color]
+[size=120][color=indigo]{{ game.away_team }} @ {{ game.home_team }} [/color][/size] [color=darkred][size=120][b] {{ game.gex }} [/b][/size][/color]
 {% endfor %}
 
-[color=darkgreen][size=14][b]Future games[/b][/size][/color]
+[color=darkgreen][size=120][b]Future games[/b][/size][/color]
 {% for game in rating.future %}
-[size=14][color=indigo]{{ game.away_team }} @ {{ game.home_team }} [/color][/size] [color=darkgreen][size=14][b]{{ game.gex_predict }}[/b][/size][/color]
+[size=120][color=indigo]{{ game.away_team }} @ {{ game.home_team }} [/color][/size] [color=darkgreen][size=120][b]{{ game.gex_predict }}[/b][/size][/color]
 {% endfor %}

@@ -1,15 +1,13 @@
-[size=12][color=gray][i] Byes: {{ schedule.byes|join(', ') }}[/i][/color][/size]
+[size=120][color=gray][i] Byes: {{ schedule.byes|join(', ') }}[/i][/color][/size]
 
 
 {% for key, times in schedule.week %}
-[size=16][font="Georgia"][color=darkblue][b] {{ key }} [/b][/color][/font][/size]
+[size=130][font=Georgia][color=darkblue][b] {{ key }} [/b][/color][/font][/size]
 {% for time in times %}
-[size=14][font="Georgia"][color=gray][i][{{ time.timeEST }} EST] [{{ time.timeKyiv }} Kiev] [{{ time.timeMoscow }} Moscow][/i][/color][/font][/size]
+[size=120][font=Georgia][color=gray][i][{{ time.timeEST }} EST] [{{ time.timeKyiv }} Kiev] [{{ time.timeMoscow }} Moscow][/i][/color][/font][/size]
 {% for game in time.games %}
-[size=14][color=indigo] {{ game }} [/color][/size]
+[size=120][color=indigo] {{ game }} [/color][/size]
 {% endfor %}
 
 {% endfor %}
 {% endfor %}
-
-

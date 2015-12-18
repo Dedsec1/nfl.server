@@ -1,5 +1,6 @@
+{% if schedule.byes %}
 [size=120][color=gray][i] Byes: {{ schedule.byes|join(', ') }}[/i][/color][/size]
-
+{% endif %}
 
 {% for key, times in schedule.week %}
 [size=130][font=Georgia][color=darkblue][b] {{ key }} [/b][/color][/font][/size]

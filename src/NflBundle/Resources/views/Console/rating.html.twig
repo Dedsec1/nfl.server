@@ -1,25 +1,31 @@
 -------720pier-------
 [center]
+{% if rating.finished %}
 [color=darkred][size=120][b]Finished games[/b][/size][/color]
 {% for game in rating.finished %}
 [size=120][color=indigo]{{ game.away_team }} @ {{ game.home_team }} [/color][/size] [color=darkred][size=120][b] {{ game.gex }} [/b][/size][/color]
 {% endfor %}
-
+{% endif %}
+{% if rating.future %}
 [color=darkgreen][size=120][b]Future games[/b][/size][/color]
 {% for game in rating.future %}
 [size=120][color=indigo]{{ game.away_team }} @ {{ game.home_team }} [/color][/size] [color=darkgreen][size=120][b]{{ game.gex_predict }}[/b][/size][/color]
 {% endfor %}
+{% endif %}
 [/center]
 
 -------TYT-------
 [center]
+{% if rating.finished %}
 [color=darkred][size=5][b]Finished games[/b][/size][/color]
 {% for game in rating.finished %}
 [size=5][color=indigo]{{ game.away_team }} @ {{ game.home_team }} [/color][/size] [color=darkred][size=5][b] {{ game.gex }} [/b][/size][/color]
 {% endfor %}
-
+{% endif %}
+{% if rating.future %}
 [color=darkgreen][size=5][b]Future games[/b][/size][/color]
 {% for game in rating.future %}
 [size=5][color=indigo]{{ game.away_team }} @ {{ game.home_team }} [/color][/size] [color=darkgreen][size=5][b]{{ game.gex_predict }}[/b][/size][/color]
 {% endfor %}
+{% endif %}
 [/center]

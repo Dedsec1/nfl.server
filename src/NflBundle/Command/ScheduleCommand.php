@@ -29,18 +29,20 @@ class ScheduleCommand extends NflCommand
     {
         $schedule = $this->nflHandler->getSchedule();
         if ($schedule) {
-            $output->writeln(
-                sprintf("<info><info>[size=12][color=gray][i] Byes: %s [/i][/color][/size]</info>", join(", ", $schedule["byes"]))
-            );
 
+            if ($schedule["byes"]) {
+                $output->writeln(
+                    sprintf("<info><info>[size=120][color=gray][i] Byes: %s [/i][/color][/size]</info>", join(", ", $schedule["byes"]))
+                );
+            }
 
             foreach ($schedule["week"] as $date => $times) {
                 $output->writeln(
-                    sprintf("<info>\r\n[size=16][font=\"Georgia\"][color=darkblue][b] %s [/b][/color][/font][/size]</info>", $date)
+                    sprintf("<info>\r\n[size=130][font=Georgia][color=darkblue][b] %s [/b][/color][/font][/size]</info>", $date)
                 );
                 foreach ($times as $time) {
                     $output->writeln(
-                        sprintf("<info>[size=14][font=\"Georgia\"][color=gray][i][%s EST] [%s Kiev] [%s Moscow][/i][/color][/font][/size]</info>"
+                        sprintf("<info>[size=110][font=Georgia][color=gray][i][%s EST] [%s Kiev] [%s Moscow][/i][/color][/font][/size]</info>"
                             , $time["timeEST"]
                             , $time["timeKyiv"]
                             , $time["timeMoscow"]
@@ -48,7 +50,7 @@ class ScheduleCommand extends NflCommand
                     );
                     foreach ($time["games"] as $game) {
                         $output->writeln(
-                            sprintf("<fg=cyan>[size=14][color=indigo] %s [/color][/size]</>", $game)
+                            sprintf("<fg=cyan>[size=120][color=indigo] %s [/color][/size]</>", $game)
                         );
                     }
                 }

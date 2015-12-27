@@ -45,7 +45,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
     private function getN2GoMD5($cookie, $gameId) {
         if ($cookie != null) {
             $res = Utils::sendPostRequest(
-                "http://nfl2go.com:2015/Player/GetGame"
+                "http://app.nfl2go.com/Player/GetGame"
                 , array(
                     'game'         => $gameId,
                     'type'         => "C",//$this->conds ? "C" : "A",
@@ -67,7 +67,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
 
     private function getN2GoCookie() {
         $pattern = "/Set-Cookie: (.*?);/is";
-        $loginForm = Utils::sendGetRequest("http://nfl2go.com:2015/Account/Login");
+        $loginForm = Utils::sendGetRequest("http://app.nfl2go.com/Account/Login");
         preg_match_all($pattern, $loginForm['header'], $matches);
         array_shift($matches);
 
@@ -87,7 +87,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
 
         if ($token != null) {
             $res = Utils::sendPostRequest(
-                "http://nfl2go.com:2015/Account/Login?ReturnUrl=%2F"
+                "http://app.nfl2go.com/Account/Login?ReturnUrl=%2F"
                 , array(
                     "__RequestVerificationToken" => $token,
                     "Email"                      => "sbabych@gmail.com",

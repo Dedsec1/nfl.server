@@ -17,7 +17,7 @@ class CronCommand extends NflCommand
     {
         $this
             ->setName('nfl:cron')
-            ->setDescription('Cron command for NFL Games streaming')
+            ->setDescription('Cron command for NFL Games streaming.')
         ;
 
         parent::configure();

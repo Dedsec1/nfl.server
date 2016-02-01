@@ -87,11 +87,11 @@ class NflHandler extends ContainerAware
         if (is_null($scores)) {
             return;
         }
-
+/*
         if (isset($scores->type) && trim($scores->type) !== "") {
             $this->type = strtolower($scores->type);
         }
-
+*/
         foreach ($scores->games->game as $game) {
             $day     = strtotime($game['d']);
             $away    = strtolower($game->away['id']);

@@ -341,6 +341,16 @@ class NflTeams
             "statId"   => "8700",
             "color"    => 11867,
             "logo"     => ""
+        ],
+        "ric" => [
+            "city"     => "",
+            "name"     => "Team Rice",
+            "id"       => "RIC",
+            "logoId"   => "RIC",
+            "statCode" => "RIC",
+            "statId"   => "8700",
+            "color"    => 11867,
+            "logo"     => ""
         ]
     );
 }

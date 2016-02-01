@@ -83,8 +83,7 @@ abstract class NflCommand extends ContainerAwareCommand
                 'type',
                 't',
                 InputOption::VALUE_OPTIONAL,
-                'Nfl Game type (REG | POST | PRE | PRO)',
-                'reg'
+                'Nfl Game type (REG | POST | PRE | PRO)'
             )
         ;
     }

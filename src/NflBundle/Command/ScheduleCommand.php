@@ -30,7 +30,7 @@ class ScheduleCommand extends NflCommand
         $schedule = $this->nflHandler->getSchedule();
         if ($schedule) {
 
-            if ($schedule["byes"]) {
+            if (($schedule["byes"]) && ($this->nflHandler->type == "reg")) {
                 $output->writeln(
                     sprintf("<info><info>[size=120][color=gray][i] Byes: %s [/i][/color][/size]</info>", join(", ", $schedule["byes"]))
                 );

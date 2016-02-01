@@ -21,7 +21,7 @@ class NflHandler extends ContainerAware
 {
     public $year;
     public $week;
-    public $type     = 'reg'; //post //pre //pro
+    public $type;    //reg post //pre //pro
     public $conds    = true;
     public $qlty     = 3000; //4500
 
@@ -67,7 +67,17 @@ class NflHandler extends ContainerAware
             $this->week = floor($datediff / (60 * 60 * 24 * 7));
             $this->week++;
         }
-        $this->type     = $type;
+        if ($type) {
+            $this->type = $type;
+        } else {
+            if (time() < strtotime($this->container->getParameter("nfl_kick_off"))) {
+                $this->type = "pre";
+            } elseif ($this->week >= 18) {
+                $this->type = "post";
+            } else {
+                $this->type = "reg";
+            }
+        }
         $this->conds    = $conds;
         $this->qlty     = $qlty;
 
@@ -218,7 +228,7 @@ class NflHandler extends ContainerAware
                     foreach ($games as $game) {
                         $exists = $exists || (strpos($game['game'], $key) !== false);
                     }
-                    if (!$exists) {
+                    if (!$exists && $this->type == "reg") {
                         $schedule["byes"][] = NflTeams::$teams[$key]["city"] . " " . NflTeams::$teams[$key]["name"];
                     }
                 }

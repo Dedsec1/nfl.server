@@ -59,13 +59,16 @@ class Utils
         return $result;
     }
 
-    public static function stream($url, $mkv, $shift = null, $ffmpeg, $acodec){
+    public static function stream($url, $mkv, $shift = null, $ffmpeg, $acodec, $logo = ""){
         //print_r($url);
         if ($shift == null) {
-            $cmd = sprintf("%s/ffmpeg -i \"%s\" -c copy -c:a %s \"%s\" " //-c:a libvo_aacenc
+            $cmd = sprintf("%s/ffmpeg -i \"%s\" -c:a %s %s \"%s\" " //-c:a libvo_aacenc
                 , $ffmpeg
                 , $url
                 , $acodec
+                , $logo == "" ?
+                    "-c copy" :
+                    "-vcodec libx264 -vf \"movie=".$logo." [wm]; [in][wm] overlay=main_w-overlay_w-10:main_h-overlay_h-10 [out]\" "
                 , $mkv
             );
         } else {

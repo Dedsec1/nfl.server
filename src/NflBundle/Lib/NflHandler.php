@@ -321,6 +321,13 @@ class NflHandler extends ContainerAware
             , $dir
             , $game['file_name']
         );
+        $logo_path = $game['logo'] ?
+            sprintf("%s"
+                //, "backend/src/NflBundle/"//$this->container->get('kernel')->getBundle('NflBundle')->getPath()
+                , "logo.png"
+            )
+            : "";
+
 
         $pattern = preg_quote($game['game_id'], '/');
         // finalise the regular expression, matching the whole line
@@ -351,6 +358,7 @@ class NflHandler extends ContainerAware
                         , $game["shift"]
                         , $this->container->getParameter("nfl_ffmpeg")
                         , $this->container->getParameter("nfl_acodec")
+                        , $logo_path
                     );
                 } else {
                     Utils::stream(
@@ -359,6 +367,7 @@ class NflHandler extends ContainerAware
                         , null
                         , $this->container->getParameter("nfl_ffmpeg")
                         , $this->container->getParameter("nfl_acodec")
+                        , $logo_path
                     );
                 }
                 return 1;
@@ -529,6 +538,7 @@ class NflHandler extends ContainerAware
                 , $game_id
             );
         }
+
         $url = Utils::sendMultiRequests($urls);
 
         if (!isset($url) || trim($url)==='') {

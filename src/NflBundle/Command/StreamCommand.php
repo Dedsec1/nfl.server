@@ -37,6 +37,13 @@ class StreamCommand extends NflCommand
                 'Time shift for streaming',
                 null
             )
+            ->addOption(
+                'logo',
+                'l',
+                InputOption::VALUE_OPTIONAL,
+                'Include logo ?',
+                false
+            )
 /*
             ->addOption(
                 'topic',
@@ -56,6 +63,7 @@ class StreamCommand extends NflCommand
         $games      = $this->nflHandler->getGames();
         $sgame      = $input->getOption("game");
         $shift      = $input->getOption("shift");
+        $logo       = $input->getOption("logo");
 //        $is_topic   = $input->getOption("topic");
 
 
@@ -67,6 +75,7 @@ class StreamCommand extends NflCommand
                 $is_shift = (stripos($game['file_name'], $sgame) !== false) && ($shift != null);
 
                 $game['shift'] = $is_shift ? $shift : false;
+                $game['logo']  = $logo;
 
                 if ($this->nflHandler->streamGame($game)) {
                     $this->isStreaming = true;

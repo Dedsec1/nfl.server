@@ -91,7 +91,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 , array(
                     "__RequestVerificationToken" => $token,
                     "Email"                      => "sbabych@gmail.com",
-                    "Password"                   => "9Welcome!"
+                    "Password"                   => "256Welcome!"
                 )
                 , $cookie
                 , sprintf("%s/%s/cookie.txt"

@@ -453,9 +453,12 @@ class NflHandler extends ContainerAware
         //get video duration
         $search='/Duration: (.*?),/';
         preg_match($search, $info, $matches);
-        $explode = explode('.', $matches[1]);
 
-        $game["duration"] = $explode[0];
+        if (count($matches) > 1) {
+            $explode = explode('.', $matches[1]);
+
+            $game["duration"] = $explode[0];
+        }
     }
 
     private function setGameOptions() {

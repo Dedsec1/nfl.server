@@ -18,7 +18,7 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
-    nfl_kick_off:  10 September 2015 midnight
+    nfl_kick_off:  8 September 2016 midnight
     nfl_path:      e:/NFL/
     nfl_data_dir:  \@gamepass
     nfl_ffmpeg:    e:/Installs/video/ffmpeg-20141130/bin

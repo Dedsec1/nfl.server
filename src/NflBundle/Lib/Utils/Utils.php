@@ -67,12 +67,12 @@ class Utils
                 , $url
                 , $acodec
                 , $logo == "" ?
-                    "-c copy" :
+                    "-c:v copy" :
                     "-vcodec libx264 -vf \"movie=".$logo." [wm]; [in][wm] overlay=main_w-overlay_w-10:main_h-overlay_h-10 [out]\" "
                 , $mkv
             );
         } else {
-            $cmd = sprintf("%s/ffmpeg -ss %s -i \"%s\" -ss 0 -c copy -c:a %s \"%s\" " //-c:a libvo_aacenc
+            $cmd = sprintf("%s/ffmpeg -ss %s -i \"%s\" -ss 0 -c:v copy -c:a %s \"%s\" " //-c:a libvo_aacenc
                 , $ffmpeg
                 , $shift
                 , $url

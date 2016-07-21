@@ -59,7 +59,7 @@ class NflHandler extends ContainerAware
         } else {
             $this->year = date("Y", strtotime($this->container->getParameter("nfl_kick_off")));
         }
-        if ($week) {
+        if ($week != null && is_numeric($week)) {
             $this->week = $week;
         } else {
             $datediff = time() - strtotime($this->container->getParameter("nfl_kick_off"));
@@ -224,7 +224,7 @@ class NflHandler extends ContainerAware
         if ($games) {
             foreach (NflTeams::$teams as $key => $values) {
                 $exists = false;
-                if (($values["city"] != "") && ($values["name"] != "")) {
+                if ($this->isActiveThisYear($values) && ($values["city"] != "") && ($values["name"] != "")) {
                     foreach ($games as $game) {
                         $exists = $exists || (strpos($game['game'], $key) !== false);
                     }
@@ -384,6 +384,19 @@ class NflHandler extends ContainerAware
      * private methods
      *
      */
+    private function isActiveThisYear($team) {
+        if (isset($team["years"])) {
+            $result = false;
+            foreach ($team["years"] as $interval) {
+                $years = explode("/", $interval);
+                $from   = $years[0];
+                $to     = isset($years[1]) ? $years[1] : date("Y");
+                $result = $result || ($this->year >= $from && $this->year <= $to);
+            }
+            return $result;
+        } else
+            return true;
+    }
 
     private function getGameFileDir() {
         $dir = sprintf("%s/NFL%d.%s%02d.%s%s"

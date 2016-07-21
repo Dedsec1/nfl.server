@@ -145,6 +145,17 @@ class NflTeams
             "statCode" => "JAX",
             "statId"   => "2250",
             "color"    => 13475880,
+            "years"    => ["1995/2015"],
+            "logo"     => "http://funkyimg.com/i/MQUg.jpg"
+        ],
+        "jax" => [
+            "city"     => "Jacksonville",
+            "name"     => "Jaguars",
+            "id"       => "JAC",
+            "statCode" => "JAX",
+            "statId"   => "2250",
+            "color"    => 13475880,
+            "years"    => ["2016"],
             "logo"     => "http://funkyimg.com/i/MQUg.jpg"
         ],
         "kc" => [
@@ -273,6 +284,17 @@ class NflTeams
             "statCode" => "SL",
             "statId"   => "2510",
             "color"    => 5942,
+            "years"    => ["1995/2015"],
+            "logo"     => "http://funkyimg.com/i/MQUo.jpg"
+        ],
+        "la" => [
+            "city"     => "Los Angeles",
+            "name"     => "Rams",
+            "id"       => "LA",
+            "statCode" => "LA",
+            "statId"   => "2510",
+            "color"    => 5942,
+            "years"    => ["2016"],
             "logo"     => "http://funkyimg.com/i/MQUo.jpg"
         ],
         "tb" => [

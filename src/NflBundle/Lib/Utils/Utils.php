@@ -17,7 +17,8 @@ class Utils
         CURLOPT_RETURNTRANSFER  => 1,
         CURLOPT_CONNECTTIMEOUT  => 15,
         CURLOPT_FAILONERROR     => 1,
-        CURLOPT_FOLLOWLOCATION  => 1
+        CURLOPT_FOLLOWLOCATION  => 1,
+        CURLINFO_HEADER_OUT     => true
     );
 
     public static function download($url) {
@@ -111,7 +112,8 @@ class Utils
         curl_setopt_array($ch, array(
             CURLOPT_HEADER          => true,
             CURLOPT_POST            => count($fields),
-            CURLOPT_POSTFIELDS      => $fields_string
+            CURLOPT_POSTFIELDS      => $fields_string,
+            CURLOPT_HTTPHEADER      => array("X-Requested-With: XMLHttpRequest")
         ));
         if ($cookie != null) {
             curl_setopt_array($ch, array(
@@ -122,6 +124,9 @@ class Utils
         }
 
         $retValue = curl_exec($ch);
+//        $sentHeaders = curl_getinfo($ch);
+//        print_r($sentHeaders);
+
 
         // Check for errors and display the error message
 /*

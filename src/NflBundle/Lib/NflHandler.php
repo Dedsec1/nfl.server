@@ -432,7 +432,7 @@ class NflHandler extends ContainerAware
         if (!$this->conds){
 
             //get md5
-            $md5 = $this->nflProvider->getMD5($game['id']);
+            $md5 = $this->nflProvider->getGameMD5($game['id']);
             if ($md5 != null) {
                 //get video duration
                 $this->getVideoInfo($game, $url . "?" . $md5);

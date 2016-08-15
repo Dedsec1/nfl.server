@@ -1,12 +1,12 @@
 NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ game.time|date("d.m.Y") }} / {{ game.away }} @ {{ game.home }} [Американский футбол, WEB-DL HD/{{ nfl.resolution }}, MKV/H.264, EN]
 
-[align=center][size=24][font="Georgia"][color=darkblue]NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ game.time|date("d.m.Y") }} [/color][/font][/size][/align]
-[hr]
-[size=24][align=center][color=#993399][font="Georgia"] {{ game.away }} [color=red]@[/color] {{ game.home }} [/font][/color][/align][/size]
-[hr][hr]
-[img=left]{{ game.logo_away }}[/img]
-[img=right]{{ game.logo_home }}[/img]
-[align=center][b]Вид спорта[/b]: Американский футбол
+[center][size=150][font=Georgia][color=darkblue]NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ game.time|date("d.m.Y") }} [/color][/font][/size][/center]
+[hr][/hr]
+[size=150][center][color=#993399][font=Georgia] {{ game.away }} [/color][color=red]@[/color][color=#993399] {{ game.home }} [/font][/color][/center][/size]
+[hr][/hr][hr][/hr]
+[imgleft]{{ game.logo_away }}[/imgleft]
+[imgright]{{ game.logo_home }}[/imgright]
+[center][b]Вид спорта[/b]: Американский футбол
 [b]Дата/Год выпуска[/b]: {{ game.time|date("d.m.Y") }}
 [b]Язык комментариев[/b]: Английский
 [b]Участники[/b]: {{ game.away }} @ {{ game.home }}
@@ -17,22 +17,17 @@ NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ 
 {% if nfl.resolution == "720p" %}
 [b]Видео[/b]: H.264 | ~ 3000 kbps | 1280x720 | 29.970 fps |
 {% endif %}
-[b]Аудио[/b]: AAC | 44100 Hz | stereo | 92 kbps |[/align]
+[b]Аудио[/b]: AAC | 44.1 KHz | stereo | 92 kbps |[/center]
 
 [spoiler="Продолжительность"]
 {{ game.duration }}
-[/spoiler]
-
-[spoiler="Счёт/Итог"]
+[/spoiler][spoiler="Счёт/Итог"]
 [url=http://www.nfl.com/gamecenter/{{ game.elias }}/{{ nfl.year }}/REG{{ nfl.week }}/{{ game.game }}]Box Score[/url]
 [spoiler="Счет"]
 {{ game.score }}
 [/spoiler]
-[/spoiler]
-
-[spoiler="Скриншоты"]
+[/spoiler][spoiler="Скриншоты"]
 
 [/spoiler]
-[hr][hr]
 
-[size=16][align=center] :arrow: [b][url=http://rutracker.org/forum/viewtopic.php?t=5045844]Ссылки на все матчи NFL 2015-2016[/url] | [url=https://goo.gl/kPHkKy]Календарь релизов[/url] [/b] :arrow2: [/align][/size]
+

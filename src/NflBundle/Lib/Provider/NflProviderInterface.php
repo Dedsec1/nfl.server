@@ -11,5 +11,8 @@ namespace NflBundle\Lib\Provider;
 
 interface  NflProviderInterface
 {
-    public function getMD5($gameId);
+    public function getGameMD5($gameId);
+
+    public function getGameUrl($gameId, $type, $qty);
+
 }

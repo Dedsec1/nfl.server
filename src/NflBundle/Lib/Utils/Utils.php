@@ -135,9 +135,17 @@ class Utils
             echo "cURL error ({$errno}):\n {$error_message}";
         }
 */
+
+        $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+        $header = substr($retValue, 0, $header_size);
+        $body = substr($retValue, $header_size);
+
         curl_close($ch);
 
-        return $retValue;
+        return array(
+            "header" => $header,
+            "body"   => $body
+        );
     }
 
     public static function sendGetRequest($url, $fields = array(), $cookie = null, $cookiejar = null) {

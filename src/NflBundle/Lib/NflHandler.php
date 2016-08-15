@@ -121,9 +121,7 @@ class NflHandler extends ContainerAware
                     $gindex = 2;
             };
 
-            $game_id = sprintf("%s/%d/%d_%d_%s_%s_%d_h_%s"
-                , date('Y/m/d', $day)
-                , $game['id']
+            $game_id = sprintf("%d_%d_%s_%s_%d_h_%s"
                 , $gindex
                 , $game['id']
                 , $away
@@ -283,7 +281,6 @@ class NflHandler extends ContainerAware
     }
 
     public function searchGameUrl($game) {
-
         $currentDate = time();//mktime(0, 0, 0, date('m'), date('d'), date('Y'));
         $date = new \DateTime($game['time'], new \DateTimeZone("America/New_York"));
         $file = $this->getGameUriFile();
@@ -297,11 +294,13 @@ class NflHandler extends ContainerAware
             if (strpos($currentFile, $game['game_id']) > 0) {
                 $this->sendGameStatus(GameStatusEvent::GAME_URL_EXISTS, $game);
             } else {
+                $url = $this->findGameUrl($game['id']);
+/*/
                 $url = $this->findGameUrl(sprintf("%s_1_%d", $game['game_id'], $this->qlty));
                 if (strlen($url) == 0) {
                     $url = $this->findGameUrl(sprintf("%s_2_%d", $game['game_id'], $this->qlty));
                 }
-
+*/
                 if (strlen($url) > 0) {
                     file_put_contents($file, $url."\r\n", FILE_APPEND);
                     $this->sendGameStatus(GameStatusEvent::GAME_URL_FOUND, $game);
@@ -343,7 +342,7 @@ class NflHandler extends ContainerAware
             if (!file_exists($mkv) || ($game["shift"] != false)) {
 
                 //get md5
-                $md5 = $this->nflProvider->getMD5($game['id']);
+                $md5 = $this->nflProvider->getGameMD5($game['id']);
                 if ($md5 == null) {
                     $this->sendGameStatus(GameStatusEvent::GAME_MD5_NOT_FOUND, $game);
                     return 0;
@@ -402,7 +401,7 @@ class NflHandler extends ContainerAware
         $dir = sprintf("%s/NFL%d.%s%02d.%s%s"
             , $this->container->getParameter("nfl_path")
             , $this->year
-            , $this->type == "pre" ? "PS" : "W"
+            , $this->type == "pre" ? "PRE" : "W"
             , $this->week
             , $this->week >= 18 ? $this->playoff."." : ""
             , $this->conds ? "CG" : "whole"
@@ -539,7 +538,10 @@ class NflHandler extends ContainerAware
         return new \SimpleXMLElement($xml);
     }
 
-    private function findGameUrl($game_id, $server_start = null, $server_end = null) {
+    private function findGameUrl($gameId) {
+        return $this->nflProvider->getGameUrl($gameId, $this->conds ? "C" : "A", $this->qlty);
+
+/*
         $server_start  = is_null($server_start)  ? self::SERVER_START  : $server_start;
         $server_end    = is_null($server_end)    ? self::SERVER_END    : $server_end;
 
@@ -571,6 +573,7 @@ class NflHandler extends ContainerAware
         }
 
         return $url;
+*/
     }
 
     private function sendGameStatus($status, $game) {

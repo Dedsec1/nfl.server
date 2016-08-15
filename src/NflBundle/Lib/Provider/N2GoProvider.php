@@ -13,8 +13,39 @@ use NflBundle\Lib\Utils\Utils;
 
 class N2GoProvider extends ContainerAware implements NflProviderInterface
 {
-    public function getMD5($gameId) {
-        $md5 = null;
+    public function getGameMD5($gameId) {
+        $res = $this->getWatchUrl($gameId, "C");
+
+        //print_r($res);
+        if ($res != null) {
+            $pos = strpos($res, "m3u8?");
+            if ($pos !== false) {
+                return substr($res, $pos + 5);
+            } else {
+                return null;
+            }
+        } else
+            return null;
+    }
+
+    public function getGameUrl($gameId, $type, $qty) {
+        $res = $this->getWatchUrl($gameId, $type);
+
+        //print_r($res);
+        if ($res != null) {
+            $pos = strpos($res, "m3u8?");
+            if ($pos !== false) {
+                $res = substr($res, 0, $pos + 4);
+                return str_replace("ipad", $qty, $res);
+            } else {
+                return null;
+            }
+        } else
+            return null;
+    }
+
+    private function getWatchUrl($gameId, $type) {
+        $url = null;
 
         $cookie = file_get_contents(
             sprintf("%s/%s/nfl2go_cookie.txt"
@@ -24,48 +55,47 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
         );
 
         if ($cookie != null) {
-            $md5 = $this->getN2GoMD5($cookie, $gameId);
+            $url = $this->sendWatchRequest($gameId, $type, $cookie);
         }
 
-        if (($md5 == null) || ($cookie = null)) {
-            $cookie = $this->getN2GoCookie();
+
+        if (($url == null) || ($cookie = null)) {
+            $cookie = $this->getCookie();
             if ($cookie != null) {
-                $md5 = $this->getN2GoMD5($cookie, $gameId);
+                $url = $this->sendWatchRequest($gameId, $type, $cookie);
                 file_put_contents(
                     sprintf("%s/%s/nfl2go_cookie.txt"
                         , $this->container->getParameter("nfl_path")
                         , $this->container->getParameter("nfl_data_dir")
-                ), $cookie);
+                    ), $cookie);
             }
         }
 
-        return $md5;
+        return $url;
     }
 
-    private function getN2GoMD5($cookie, $gameId) {
-        if ($cookie != null) {
-            $res = Utils::sendPostRequest(
-                "http://app.nfl2go.com/Player/Watch" //GetGame
-                , array(
-                    'code'         => $gameId,
-                    'type'         => "C",//$this->conds ? "C" : "A",
-                )
-                , $cookie
-                , sprintf("%s/%s/cookie.txt"
-                    , $this->container->getParameter("nfl_path")
-                    , $this->container->getParameter("nfl_data_dir")
-                )
-            );
-        }
-        //print_r($res);
-        $pos = strpos($res, "m3u8?");
-        if ($pos !== false) {
-            return substr($res, $pos + 5);
-        } else
+    private function sendWatchRequest($gameId, $type, $cookie) {
+        $url =  Utils::sendPostRequest(
+            "http://app.nfl2go.com/Player/Watch" //GetGame
+            , array(
+                'code'         => $gameId,
+                'type'         => $type,
+            )
+            , $cookie
+            , sprintf("%s/%s/cookie.txt"
+                , $this->container->getParameter("nfl_path")
+                , $this->container->getParameter("nfl_data_dir")
+            )
+        );
+        //print_r($url);
+
+        if (strpos($url['body'], "m3u8?") === false) {
             return null;
+        } else
+            return $url['body'];
     }
 
-    private function getN2GoCookie() {
+    private function getCookie() {
         $token = null;
         $pattern = "/Set-Cookie: (.*?);/is";
         $loginForm = Utils::sendGetRequest("http://nfl2go.com/Account/Login");
@@ -101,9 +131,8 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 )
             );
 
-            preg_match_all($pattern, $res, $matches);
+            preg_match_all($pattern, $res['header'], $matches);
             array_shift($matches);
-
 
             return $cookie.";".implode(";", $matches[0]);
 

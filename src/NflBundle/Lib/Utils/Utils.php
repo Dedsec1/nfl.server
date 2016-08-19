@@ -60,6 +60,38 @@ class Utils
         return $result;
     }
 
+    public static function addLogo($mkv, $logo, $ffmpeg, $acodec)
+    {
+        $cmd = sprintf(
+            "%s/ffmpeg -t 20 -i \"%s\" -i \"%s\" -filter_complex \"overlay=main_w-overlay_w-10:main_h-overlay_h-10\" -acodec copy chunk.mkv"
+            , $ffmpeg
+            , $mkv
+            , $logo
+        );
+        shell_exec($cmd);
+
+        $cmd = sprintf(
+            //"%s/ffmpeg -i \"%s\" -vf \"movie=%s [wm]; [in][wm] overlay=main_w-overlay_w-10:main_h-overlay_h-10:enable=between(t\\,0\\,30) [out]\" -acodec copy out.mkv"
+            //"%s/ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"overlay=main_w-overlay_w-10:main_h-overlay_h-10:enable=between(t\\,0\\,30)\"  out.mkv"
+            "%s/ffmpeg -i chunk.mkv -i \"%s\" -filter_complex \"overlay=main_w-overlay_w-10:main_h-overlay_h-10\"  watermark.mkv"
+            , $ffmpeg
+            , $logo
+        );
+
+//        shell_exec($cmd);
+
+
+/*
+        if (strtoupper(substr(PHP_OS, 0, 3) === 'WIN')) {
+            //print_r("WIN");
+            pclose(popen(escapeshellcmd("start cmd.exe /K " . $cmd), "r"));
+        } else {
+            //print_r("Linux");
+            exec($cmd);
+        }
+*/
+    }
+
     public static function stream($url, $mkv, $shift = null, $ffmpeg, $acodec, $logo = ""){
         //print_r($url);
         if ($shift == null) {
@@ -122,7 +154,7 @@ class Utils
                 CURLOPT_COOKIEJAR       => $cookiejar
             ));
         }
-
+        //print_r("POST (".$url.") request send \r\n");
         $retValue = curl_exec($ch);
 //        $sentHeaders = curl_getinfo($ch);
 //        print_r($sentHeaders);
@@ -171,7 +203,7 @@ class Utils
                 CURLOPT_COOKIEJAR       => $cookiejar
             ));
         }
-
+        //print_r("GET (".$url.") request send \r\n");
         $retValue = curl_exec($ch);
 
         // Check for errors and display the error message

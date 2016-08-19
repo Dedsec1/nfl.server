@@ -8,6 +8,7 @@
 
 namespace NflBundle\Lib;
 
+use NflBundle\Lib\Entity\Game;
 use Symfony\Component\DependencyInjection\ContainerAware;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Templating\EngineInterface;;
@@ -97,80 +98,26 @@ class NflHandler extends ContainerAware
         if (is_null($scores)) {
             return;
         }
-/*
-        if (isset($scores->type) && trim($scores->type) !== "") {
-            $this->type = strtolower($scores->type);
-        }
-*/
-        foreach ($scores->games->game as $game) {
-            $day     = strtotime($game['d']);
-            $away    = strtolower($game->away['id']);
-            $home    = strtolower($game->home['id']);
 
-            $gindex = 2;
-            switch ($this->type) {
-                case "pre":
-                    $gindex = 1;
-                    break;
-                case "post":
-                case "pro":
-                    $gindex = 3;
-                    break;
-                case "reg":
-                default:
-                    $gindex = 2;
-            };
-
-            $game_id = sprintf("%d_%d_%s_%s_%d_h_%s"
-                , $gindex
-                , $game['id']
-                , $away
-                , $home
-                , $this->year
-                , $this->conds ? 'snap2w' : 'whole'
-//            , $this->qlty
-            );
-            $gname = sprintf("NFL%d.W%02d.%s-%s.%s%s"
-                , $this->year
-                , $this->week
-                , NflTeams::$teams[$away] ? NflTeams::$teams[$away]["name"] : $away
-                , NflTeams::$teams[$home] ? NflTeams::$teams[$home]["name"] : $home
-                , $this->resolution
-                , $this->conds ? ".CG" : ""
-            );
-            $games[] = array(
-                "d"         => $game['d'],
-                "t"         => $game['t'],
-                "time"      => $game['d']." ".$game['t'],
-
-                "game_id"   => $game_id,
-                "file_name" => $gname,
-
-                "away"      => NflTeams::$teams[$away]["city"]." ".NflTeams::$teams[$away]["name"],
-                "home"      => NflTeams::$teams[$home]["city"]." ".NflTeams::$teams[$home]["name"],
-
-                "game"      => $away."@".$home,
-                "id"        => intval($game["id"]),
-                "elias"     => strtolower($game["elias"]),
-                "score"     => sprintf("%d - %d", $game->away['p'], $game->home['p']),
-
-                "logo_away" => NflTeams::$teams[$away]["logo"],
-                "logo_home" => NflTeams::$teams[$home]["logo"],
-
-                //video info
-                "duration"  => null
-            );
+        foreach ($scores->games->game as $gamexml) {
+            $games[] = new Game($gamexml, array(
+                    "year"          => $this->year
+                ,   "week"          => $this->week
+                ,   "type"          => $this->type
+                ,   "conds"         => $this->conds
+                ,   "resolution"    => $this->resolution
+            ));
         }
 
         if ($sort) {
-            usort($games, function ($a, $b) {
+            usort($games, function (Game $a, Game $b) {
 
                 //strcmp($a["game"], $b["game"]); //$a["id"] > $b["id"] ? 1 : -1;
-                $atime = strtotime($a["time"]);
-                $btime = strtotime($b["time"]);
+                $atime = strtotime($a->getDatetime());
+                $btime = strtotime($b->getDatetime());
                 $cmp = strcmp($atime, $btime);
                 if ($cmp == 0) {
-                    return $a["elias"] > $b["elias"]
+                    return $a->getElias() > $b->getElias()
                         ? 1
                         : -1;
                 } else {
@@ -224,7 +171,7 @@ class NflHandler extends ContainerAware
                 $exists = false;
                 if ($this->isActiveThisYear($values) && ($values["city"] != "") && ($values["name"] != "")) {
                     foreach ($games as $game) {
-                        $exists = $exists || (strpos($game['game'], $key) !== false);
+                        $exists = $exists || (strpos($game->getGame(), $key) !== false);
                     }
                     if (!$exists && $this->type == "reg") {
                         $schedule["byes"][] = NflTeams::$teams[$key]["city"] . " " . NflTeams::$teams[$key]["name"];
@@ -233,12 +180,12 @@ class NflHandler extends ContainerAware
             }
 
             foreach ($games as $game) {
-                if (strcmp($game['d'], $date) != 0) {
-                    $date = $game['d'];
+                if (strcmp($game->getDate(), $date) != 0) {
+                    $date = $game->getDate();
                     $schedule["week"]["$date"] = array();
                 }
 
-                $gtime = $game["time"];
+                $gtime = $game->getDateTime();
                 if (strcmp(strtotime($gtime), $time) != 0) {
                     $time = strtotime($gtime);
 
@@ -255,7 +202,7 @@ class NflHandler extends ContainerAware
                         "games"         => array()
                     );
                 }
-                $schedule["week"]["$date"]["$time"]["games"][] = sprintf("%s @ %s", $game["away"], $game["home"]);
+                $schedule["week"]["$date"]["$time"]["games"][] = sprintf("%s @ %s", $game->getAway(), $game->getHome());
 
             }
         }
@@ -280,9 +227,9 @@ class NflHandler extends ContainerAware
         return $schedule;
     }
 
-    public function searchGameUrl($game) {
+    public function searchGameUrl(Game $game) {
         $currentDate = time();//mktime(0, 0, 0, date('m'), date('d'), date('Y'));
-        $date = new \DateTime($game['time'], new \DateTimeZone("America/New_York"));
+        $date = new \DateTime($game->getDatetime(), new \DateTimeZone("America/New_York"));
         $file = $this->getGameUriFile();
         $currentFile = file_get_contents($file);
 
@@ -291,10 +238,10 @@ class NflHandler extends ContainerAware
         } elseif (round(($currentDate - $date->getTimestamp())/3600, 1) < 3) {
             $this->sendGameStatus(GameStatusEvent::GAME_IS_RUNNING, $game);
         } else {
-            if (strpos($currentFile, $game['game_id']) > 0) {
+            if (strpos($currentFile, $game->getGameId()) > 0) {
                 $this->sendGameStatus(GameStatusEvent::GAME_URL_EXISTS, $game);
             } else {
-                $url = $this->findGameUrl($game['id']);
+                $url = $this->findGameUrl($game->getId());
 /*/
                 $url = $this->findGameUrl(sprintf("%s_1_%d", $game['game_id'], $this->qlty));
                 if (strlen($url) == 0) {
@@ -312,23 +259,40 @@ class NflHandler extends ContainerAware
 
     }
 
-    public function streamGame(&$game) {
+    public function addLogo(Game &$game, $logo) {
+        $dir = $this->getGameFileDir();
+        $mkv = sprintf(
+            "%s/%s.mkv"
+            , $dir
+            , $game->getFileName()
+        );
+
+        if (!file_exists($mkv)) {
+            $this->sendGameStatus(GameStatusEvent::FILE_NOT_EXISTS, $game);
+            return;
+        } else {
+            $this->sendGameStatus(GameStatusEvent::GAME_ADD_LOGO, $game);
+
+            Utils::addLogo(
+                $mkv
+                , $logo
+                , $this->container->getParameter("nfl_ffmpeg")
+                , $this->container->getParameter("nfl_acodec")
+            );
+        }
+    }
+
+    public function streamGame(Game &$game) {
         $currentFile = file_get_contents($this->getGameUriFile());
         $dir         = $this->getGameFileDir();
         $mkv = sprintf(
             "%s/%s.mkv"
             , $dir
-            , $game['file_name']
+            , $game->getFileName()
         );
-        $logo_path = $game['logo'] ?
-            sprintf("%s"
-                //, "backend/src/NflBundle/"//$this->container->get('kernel')->getBundle('NflBundle')->getPath()
-                , "logo.png"
-            )
-            : "";
 
 
-        $pattern = preg_quote($game['game_id'], '/');
+        $pattern = preg_quote($game->getGameId(), '/');
         // finalise the regular expression, matching the whole line
         $pattern = "/^.*$pattern.*\$/m";
 
@@ -339,10 +303,10 @@ class NflHandler extends ContainerAware
             //render topic template
             $this->renderTemplate($game, $url);
 
-            if (!file_exists($mkv) || ($game["shift"] != false)) {
+            if (!file_exists($mkv) || ($game->getShift() != false)) {
 
                 //get md5
-                $md5 = $this->nflProvider->getGameMD5($game['id']);
+                $md5 = $this->nflProvider->getGameMD5($game->getId());
                 if ($md5 == null) {
                     $this->sendGameStatus(GameStatusEvent::GAME_MD5_NOT_FOUND, $game);
                     return 0;
@@ -350,14 +314,13 @@ class NflHandler extends ContainerAware
 
                 $this->sendGameStatus(GameStatusEvent::GAME_STREAMING, $game);
 
-                if ($game["shift"] != false) {
+                if ($game->getShift() != false) {
                     Utils::stream(
                         $url . "?" . $md5
-                        , sprintf("%s/%s2.mkv", $dir, $game['file_name'])
-                        , $game["shift"]
+                        , sprintf("%s/%s2.mkv", $dir, $game->getFileName())
+                        , $game->getShift()
                         , $this->container->getParameter("nfl_ffmpeg")
                         , $this->container->getParameter("nfl_acodec")
-                        , $logo_path
                     );
                 } else {
                     Utils::stream(
@@ -366,7 +329,6 @@ class NflHandler extends ContainerAware
                         , null
                         , $this->container->getParameter("nfl_ffmpeg")
                         , $this->container->getParameter("nfl_acodec")
-                        , $logo_path
                     );
                 }
                 return 1;
@@ -432,7 +394,7 @@ class NflHandler extends ContainerAware
         if (!$this->conds){
 
             //get md5
-            $md5 = $this->nflProvider->getGameMD5($game['id']);
+            $md5 = $this->nflProvider->getGameMD5($game->getId());
             if ($md5 != null) {
                 //get video duration
                 $this->getVideoInfo($game, $url . "?" . $md5);
@@ -452,14 +414,14 @@ class NflHandler extends ContainerAware
                 sprintf(
                     "%s/%s.txt"
                     , $this->getGameFileDir()
-                    , $game['file_name']
+                    , $game->getFileName()
                 )
                 , $topic
             );
         }
     }
 
-    private function getVideoInfo(&$game, $url) {
+    private function getVideoInfo(Game &$game, $url) {
         $info =  Utils::probe($url, $this->container->getParameter("nfl_ffmpeg"));
 
         //get video duration
@@ -469,7 +431,7 @@ class NflHandler extends ContainerAware
         if (count($matches) > 1) {
             $explode = explode('.', $matches[1]);
 
-            $game["duration"] = $explode[0];
+            $game->setDuration($explode[0]);
         }
     }
 

@@ -57,6 +57,13 @@ services:
       tags:
           -  { name: console.command }
 
+  nfl.command.logo:
+      class: NflBundle\Command\LogoCommand
+      arguments:
+          - @nfl.lib.nflhandler
+      tags:
+          -  { name: console.command }
+
   nfl.command.rating:
       class: NflBundle\Command\RatingCommand
       arguments:

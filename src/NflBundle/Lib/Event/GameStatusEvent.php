@@ -20,6 +20,8 @@ class GameStatusEvent extends Event
     const GAME_FILE_EXISTS      = 5;
     const GAME_STREAMING        = 6;
     const GAME_MD5_NOT_FOUND    = 7;
+    const FILE_NOT_EXISTS       = 8;
+    const GAME_ADD_LOGO         = 9;
 
     protected $status;
     protected $game;

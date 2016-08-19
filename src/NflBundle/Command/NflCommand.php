@@ -94,14 +94,14 @@ abstract class NflCommand extends ContainerAwareCommand
         $status = $event->getStatus();
 
 
-        $output->write($game['file_name'] . "\t\t:: ");
+        $output->write($game->getFileName() . "\t\t:: ");
         switch ($status) {
             case GameStatusEvent::GAME_MD5_NOT_FOUND:
                 $output->writeln("<error>MD5 not found, try again later</error>");
                 break;
             case GameStatusEvent::GAME_STREAMING:
-                if ($game["shift"] != false) {
-                    $output->writeln("<fg=cyan>continue streaming from ".$game["shift"]."</>");
+                if ($game->getShift() != false) {
+                    $output->writeln("<fg=cyan>continue streaming from ".$game->getShift()."</>");
                 } else {
                     $output->writeln("<fg=cyan>start game streaming...</>");
                 }
@@ -109,8 +109,11 @@ abstract class NflCommand extends ContainerAwareCommand
             case GameStatusEvent::GAME_FILE_EXISTS:
                 $output->writeln("<info>Game file already exists</info>");
                 break;
+            case GameStatusEvent::FILE_NOT_EXISTS:
+                $output->writeln("<error>File not exists.</error>");
+                break;
             case GameStatusEvent::GAME_NOT_STARTED:
-                $timeKyiv = new \DateTime($game['time'], new \DateTimeZone("America/New_York"));
+                $timeKyiv = new \DateTime($game->getDateTime(), new \DateTimeZone("America/New_York"));
                 $timeKyiv->setTimezone(new \DateTimeZone("Europe/Kiev"));
                 $output->writeln(
                     sprintf(
@@ -127,6 +130,9 @@ abstract class NflCommand extends ContainerAwareCommand
                 break;
             case GameStatusEvent::GAME_URL_FOUND:
                 $output->writeln("<info>Game URL found</info>");
+                break;
+            case GameStatusEvent::GAME_ADD_LOGO:
+                $output->writeln("<fg=cyan>start adding logo to the file...</>");
                 break;
             case GameStatusEvent::GAME_URL_NOT_FOUND:
             default:

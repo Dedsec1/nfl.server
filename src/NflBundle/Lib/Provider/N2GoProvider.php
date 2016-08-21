@@ -129,7 +129,8 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 )
                 , array(
                     "Origin: https://nfl2go.com",
-                    "Referer: https://nfl2go.com/Account/Login"
+                    "Referer: https://nfl2go.com/Account/Login",
+                    "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"
                 )
                 , $cookie
                 , sprintf("%s/%s/cookie.txt"

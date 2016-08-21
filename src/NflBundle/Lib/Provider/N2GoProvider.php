@@ -83,6 +83,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 'code'         => $gameId,
                 'type'         => $type,
             )
+            , array()
             , $cookie
             , sprintf("%s/%s/cookie.txt"
                 , $this->container->getParameter("nfl_path")
@@ -120,11 +121,15 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
 
         if ($token != null) {
             $res = Utils::sendPostRequest(
-                "https://nfl2go.com/Account/Login?ReturnUrl=%2F"
+                "https://nfl2go.com/Account/Login"
                 , array(
                     "__RequestVerificationToken" => $token,
                     "Username"                   => "sbabych@gmail.com",
                     "Password"                   => "256Welcome!"
+                )
+                , array(
+                    "Origin: https://nfl2go.com",
+                    "Referer: https://nfl2go.com/Account/Login"
                 )
                 , $cookie
                 , sprintf("%s/%s/cookie.txt"
@@ -132,7 +137,6 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                     , $this->container->getParameter("nfl_data_dir")
                 )
             );
-            //print_r($res);
             preg_match_all($pattern, $res['header'], $matches);
             array_shift($matches);
 

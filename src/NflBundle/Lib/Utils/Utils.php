@@ -132,20 +132,21 @@ class Utils
         return shell_exec($cmd);
     }
 
-    public static function sendPostRequest($url, $fields = array(), $cookie = null, $cookiejar) {
+    public static function sendPostRequest($url, $fields = array(), $headers = array(), $cookie = null, $cookiejar, $print = false)
+    {
         $fields_string = "";
-        foreach($fields as $key => $value) {
-            $fields_string .= $key.'='.$value.'&';
+        foreach ($fields as $key => $value) {
+            $fields_string .= $key . '=' . $value . '&';
         }
         rtrim($fields_string, '&');
 
         $ch = curl_init($url);
         curl_setopt_array($ch, self::$curl_options);
         curl_setopt_array($ch, array(
-            CURLOPT_HEADER          => true,
-            CURLOPT_POST            => count($fields),
-            CURLOPT_POSTFIELDS      => $fields_string,
-            CURLOPT_HTTPHEADER      => array("X-Requested-With: XMLHttpRequest")
+            CURLOPT_HEADER      => true,
+            CURLOPT_POST        => count($fields),
+            CURLOPT_POSTFIELDS  => $fields_string,
+            CURLOPT_HTTPHEADER  => array_merge(array("X-Requested-With: XMLHttpRequest"), $headers)
         ));
         if ($cookie != null) {
             curl_setopt_array($ch, array(
@@ -154,11 +155,17 @@ class Utils
                 CURLOPT_COOKIEJAR       => $cookiejar
             ));
         }
-        //print_r("POST (".$url.") request send \r\n");
-        $retValue = curl_exec($ch);
-//        $sentHeaders = curl_getinfo($ch);
-//        print_r($sentHeaders);
 
+        $retValue = curl_exec($ch);
+        if ($print) {
+            print_r("POST request to ".$url." sent \r\n");
+            print_r("request fields are:  ".$fields_string."\r\n");
+            print_r("cookie are:  ".$cookie."\r\n");
+            print_r($retValue."\r\n");
+
+            $sentHeaders = curl_getinfo($ch);
+            print_r($sentHeaders);
+        }
 
         // Check for errors and display the error message
 /*

@@ -63,10 +63,17 @@ class NflHandler extends ContainerAware
         if ($week != null && is_numeric($week)) {
             $this->week = $week;
         } else {
-            $datediff = time() - strtotime($this->container->getParameter("nfl_kick_off"));
+            if (time() < strtotime($this->container->getParameter("nfl_kick_off"))) {
 
-            $this->week = floor($datediff / (60 * 60 * 24 * 7));
-            $this->week++;
+                $datediff = strtotime($this->container->getParameter("nfl_kick_off")) - time();
+                $this->week = floor($datediff / (60 * 60 * 24 * 7));
+
+            } else {
+                $datediff = time() - strtotime($this->container->getParameter("nfl_kick_off"));
+
+                $this->week = floor($datediff / (60 * 60 * 24 * 7));
+                $this->week++;
+            }
         }
         if ($type) {
             $this->type = $type;
@@ -87,6 +94,7 @@ class NflHandler extends ContainerAware
         $this->ratingHandler->init(
             $this->year
             , $this->week
+            , $this->type
         );
     }
 

@@ -21,12 +21,13 @@ class RatingHandler extends ContainerAware
 
     const THUUZ_URL = "http://mobile.thuuz.com/2.3/games";
 
-    public function init($year, $week) {
+    public function init($year, $week, $type)
+    {
         $this->year = $year;
         $this->week = $week;
 
         $start = new \DateTime();
-        $start->setISODate($this->year, date("W", strtotime($this->container->getParameter("nfl_kick_off"))) + $this->week - 1, 2);
+        $start->setISODate($this->year, date("W", strtotime($this->container->getParameter("nfl_kick_off"))) + $this->week - ($type === "pre" ? 5 : 1), 2);
 
         $this->start_date = $start
             ->format("Y-m-d H:m:s")

@@ -60,26 +60,73 @@ class Utils
         return $result;
     }
 
-    public static function addLogo($mkv, $logo, $ffmpeg, $acodec)
+    public static function addLogo($mkv, $logo, $tmpDir, $ffmpeg, $acodec)
     {
+        $chunkFile  = sprintf("%s/logo.mkv", $tmpDir);
+        $endFile    = sprintf("%s/game.mkv", $tmpDir);
+        $outputFile = sprintf("%s/output.mkv", $tmpDir);
+
+        if (file_exists($chunkFile)) {
+            unlink($chunkFile);
+        }
+        if (file_exists($endFile)) {
+            unlink($endFile);
+        }
+        if (file_exists($outputFile)) {
+            unlink($outputFile);
+        }
+
         $cmd = sprintf(
-            "%s/ffmpeg -t 20 -i \"%s\" -i \"%s\" -filter_complex \"overlay=main_w-overlay_w-10:main_h-overlay_h-10\" -acodec copy chunk.mkv"
+            "%s/ffmpeg -t 20 -i \"%s\" -i \"%s\" -filter_complex \"overlay=main_w-overlay_w-10:main_h-overlay_h-10\" -acodec copy %s"
             , $ffmpeg
             , $mkv
             , $logo
+            , $chunkFile
         );
         shell_exec($cmd);
 
         $cmd = sprintf(
-            //"%s/ffmpeg -i \"%s\" -vf \"movie=%s [wm]; [in][wm] overlay=main_w-overlay_w-10:main_h-overlay_h-10:enable=between(t\\,0\\,30) [out]\" -acodec copy out.mkv"
-            //"%s/ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"overlay=main_w-overlay_w-10:main_h-overlay_h-10:enable=between(t\\,0\\,30)\"  out.mkv"
-            "%s/ffmpeg -i chunk.mkv -i \"%s\" -filter_complex \"overlay=main_w-overlay_w-10:main_h-overlay_h-10\"  watermark.mkv"
+            "%s/ffmpeg -ss 21 -i \"%s\" -c:v copy -acodec copy %s"
             , $ffmpeg
+            , $mkv
+            , $endFile
+        );
+        shell_exec($cmd);
+
+
+        $cmd = sprintf(
+            "%s/ffmpeg -f concat -i %s/list.txt -c copy %s"
+            , $ffmpeg
+            , $tmpDir
+            , $outputFile
+        );
+        shell_exec($cmd);
+
+
+        if (file_exists($outputFile)) {
+            unlink($mkv);
+            rename($outputFile, $mkv);
+        }
+        if (file_exists($chunkFile)) {
+            unlink($chunkFile);
+        }
+        if (file_exists($endFile)) {
+            unlink($endFile);
+        }
+
+/*
+        $cmd = sprintf(
+            //"%s/ffmpeg -i \"%s\" -vf \"movie=%s [wm]; [in][wm] overlay=main_w-overlay_w-10:main_h-overlay_h-10:enable=between(t\\,0\\,30) [out]\" -acodec copy out.mkv"
+            "%s/ffmpeg -i \"%s\" -i \"%s\" -filter_complex \"overlay=main_w-overlay_w-10:main_h-overlay_h-10:enable=between(t\\,0\\,30)\" %s"
+            //"%s/ffmpeg -i chunk.mkv -i \"%s\" -filter_complex \"overlay=main_w-overlay_w-10:main_h-overlay_h-10\"  watermark.mkv"
+            , $ffmpeg
+            , $mkv
             , $logo
+            , $chunkFile
         );
 
-//        shell_exec($cmd);
-
+        shell_exec($cmd);
+*/
 
 /*
         if (strtoupper(substr(PHP_OS, 0, 3) === 'WIN')) {

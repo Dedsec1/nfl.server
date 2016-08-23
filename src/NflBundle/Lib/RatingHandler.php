@@ -15,6 +15,7 @@ class RatingHandler extends ContainerAware
 {
     public $year;
     public $week;
+    public $type;
 
     public $start_date;
     public $end_date;
@@ -25,6 +26,7 @@ class RatingHandler extends ContainerAware
     {
         $this->year = $year;
         $this->week = $week;
+        $this->type = $type;
 
         $start = new \DateTime();
         $start->setISODate($this->year, date("W", strtotime($this->container->getParameter("nfl_kick_off"))) + $this->week - ($type === "pre" ? 5 : 1), 2);

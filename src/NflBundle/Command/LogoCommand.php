@@ -22,7 +22,7 @@ class LogoCommand extends NflCommand
             ->setDescription('Overlay selected game with logo')
             ->addOption(
                 'game',
-                null,
+                'g',
                 InputOption::VALUE_REQUIRED,
                 'Team which Game to be overlayed'
             )

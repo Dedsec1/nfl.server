@@ -150,9 +150,10 @@ class NflHandler extends ContainerAware
         ;
         file_put_contents(
             sprintf(
-                "%s/%d_rating_%02d.txt"
+                "%s/%d_rating_%s%02d.txt"
                 , $this->container->getParameter("nfl_path")
                 , $this->year
+                , strtoupper($this->type)
                 , $this->week
             )
             , $topic
@@ -275,15 +276,28 @@ class NflHandler extends ContainerAware
             , $game->getFileName()
         );
 
+        $tmpDir = sprintf(
+            "%s/%s"
+            , $this->container->getParameter("nfl_path")
+            , $this->container->getParameter("nfl_temp_dir")
+        );
         if (!file_exists($mkv)) {
             $this->sendGameStatus(GameStatusEvent::FILE_NOT_EXISTS, $game);
             return;
         } else {
             $this->sendGameStatus(GameStatusEvent::GAME_ADD_LOGO, $game);
 
+            if ($logo == '') {
+                $logo = sprintf(
+                    "%s/logo.png"
+                    , $tmpDir
+                );
+            }
+
             Utils::addLogo(
                 $mkv
                 , $logo
+                , $tmpDir
                 , $this->container->getParameter("nfl_ffmpeg")
                 , $this->container->getParameter("nfl_acodec")
             );

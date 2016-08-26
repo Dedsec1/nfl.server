@@ -66,7 +66,7 @@ class NflHandler extends ContainerAware
             if (time() < strtotime($this->container->getParameter("nfl_kick_off"))) {
 
                 $datediff = strtotime($this->container->getParameter("nfl_kick_off")) - time();
-                $this->week = floor($datediff / (60 * 60 * 24 * 7));
+                $this->week = 4 - floor($datediff / (60 * 60 * 24 * 7));
 
             } else {
                 $datediff = time() - strtotime($this->container->getParameter("nfl_kick_off"));

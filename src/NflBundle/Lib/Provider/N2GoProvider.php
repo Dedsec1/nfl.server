@@ -44,69 +44,19 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
             return null;
     }
 
-    private function getWatchUrl($gameId, $type) {
-        $url = null;
-
-        $cookie = file_get_contents(
-            sprintf("%s/%s/nfl2go_cookie.txt"
-                , $this->container->getParameter("nfl_path")
-                , $this->container->getParameter("nfl_data_dir")
-            )
-        );
-
-        if ($cookie != null) {
-            $url = $this->sendWatchRequest($gameId, $type, $cookie);
-        }
-
-
-        if (($url == null) || ($cookie = null)) {
-
-            $cookie = $this->getCookie();
-            //print_r($cookie);
-            if ($cookie != null) {
-                $url = $this->sendWatchRequest($gameId, $type, $cookie);
-                file_put_contents(
-                    sprintf("%s/%s/nfl2go_cookie.txt"
-                        , $this->container->getParameter("nfl_path")
-                        , $this->container->getParameter("nfl_data_dir")
-                    ), $cookie);
-            }
-        }
-
-        return $url;
-    }
-
-    private function sendWatchRequest($gameId, $type, $cookie) {
-        $url =  Utils::sendPostRequest(
-            "http://app.nfl2go.com/Player/Watch" //GetGame
-            , array(
-                'code'         => $gameId,
-                'type'         => $type,
-            )
-            , array()
-            , $cookie
-            , sprintf("%s/%s/cookie.txt"
-                , $this->container->getParameter("nfl_path")
-                , $this->container->getParameter("nfl_data_dir")
-            )
-        );
-        //print_r($url);
-
-        if (strpos($url['body'], "m3u8?") === false) {
-            return null;
-        } else
-            return $url['body'];
-    }
-
-    private function getCookie() {
+    public function login(&$cookie, $print = false) {
         $token = null;
         $pattern = "/Set-Cookie: (.*?);/is";
-        $loginForm = Utils::sendGetRequest("http://nfl2go.com/Account/Login");
+        $loginForm = Utils::sendGetRequest("http://nfl2go.com/Account/Login", array(), array(
+            "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"
+            , "Accept-Encoding: gzip, deflate"
+            , "Host: nfl2go.com"
+            , "X-Requested-With: XMLHttpRequest"
+        ));
         preg_match_all($pattern, $loginForm['header'], $matches);
         array_shift($matches);
 
-        $cookie =  implode("\n", $matches[0]);
-
+        $cookie =  implode(";", $matches[0]);
 
         $DOM = new \DOMDocument();
         $DOM->loadHTML($loginForm['body']);
@@ -128,22 +78,73 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                     "Password"                   => "256Welcome!"
                 )
                 , array(
-                    "Origin: https://nfl2go.com",
-                    "Referer: https://nfl2go.com/Account/Login",
-                    "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"
+                    "X-Requested-With: XMLHttpRequest"
+                    , "Origin: https://nfl2go.com"
+                    , "Referer: https://nfl2go.com/Account/Login"
+                    , "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko"
+                    , "Content-Type: application/x-www-form-urlencoded"
                 )
                 , $cookie
-                , sprintf("%s/%s/cookie.txt"
-                    , $this->container->getParameter("nfl_path")
-                    , $this->container->getParameter("nfl_data_dir")
-                )
+                , $print
             );
-            preg_match_all($pattern, $res['header'], $matches);
-            array_shift($matches);
 
-            return $cookie.";".implode(";", $matches[0]);
+            if ($res['body'] === "Ok:") {
+                preg_match_all($pattern, $res['header'], $matches);
+                array_shift($matches);
 
+                $cookie .= ";" . implode(";", $matches[0]);
+                file_put_contents(
+                    sprintf("%s/%s/nfl2go_cookie.txt"
+                        , $this->container->getParameter("nfl_path")
+                        , $this->container->getParameter("nfl_data_dir")
+                    ), $cookie
+                );
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
+    private function getWatchUrl($gameId, $type) {
+        $url = null;
+
+        $cookie = file_get_contents(
+            sprintf("%s/%s/nfl2go_cookie.txt"
+                , $this->container->getParameter("nfl_path")
+                , $this->container->getParameter("nfl_data_dir")
+            )
+        );
+
+        if ($cookie != null) {
+            $url = $this->sendWatchRequest($gameId, $type, $cookie);
+        }
+
+        if (($url == null) || ($cookie = null)) {
+            $this->login($cookie);
+            if ($cookie != null) {
+                $url = $this->sendWatchRequest($gameId, $type, $cookie);
+            }
+        }
+
+        return $url;
+    }
+
+    private function sendWatchRequest($gameId, $type, $cookie) {
+        $url =  Utils::sendPostRequest(
+            "http://app.nfl2go.com/Player/Watch" //GetGame
+            , array(
+                'code'         => $gameId,
+                'type'         => $type,
+            )
+            , array()
+            , $cookie
+        );
+        //print_r($url);
+
+        if (strpos($url['body'], "m3u8?") === false) {
+            return null;
         } else
-            return $cookie;
+            return $url['body'];
     }
 }

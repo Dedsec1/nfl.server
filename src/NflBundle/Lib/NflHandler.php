@@ -363,6 +363,10 @@ class NflHandler extends ContainerAware
         return 0;
     }
 
+    public function checkLogin(&$cookie)
+    {
+        return $this->nflProvider->login($cookie);
+    }
     /**
      * private methods
      *
@@ -371,7 +375,7 @@ class NflHandler extends ContainerAware
         if (isset($team["years"])) {
             $result = false;
             foreach ($team["years"] as $interval) {
-                $years = explode("/", $interval);
+                $years  = explode("/", $interval);
                 $from   = $years[0];
                 $to     = isset($years[1]) ? $years[1] : date("Y");
                 $result = $result || ($this->year >= $from && $this->year <= $to);

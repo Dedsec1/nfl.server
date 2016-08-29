@@ -15,4 +15,6 @@ interface  NflProviderInterface
 
     public function getGameUrl($gameId, $type, $qty);
 
+    public function login(&$cookie, $print = false);
+
 }

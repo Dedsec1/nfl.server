@@ -179,27 +179,22 @@ class Utils
         return shell_exec($cmd);
     }
 
-    public static function sendPostRequest($url, $fields = array(), $headers = array(), $cookie = null, $cookiejar, $print = false)
+    public static function sendPostRequest($url, $fields = array(), $headers = array(), $cookie = null, $print = false)
     {
-        $fields_string = "";
-        foreach ($fields as $key => $value) {
-            $fields_string .= $key . '=' . $value . '&';
-        }
-        rtrim($fields_string, '&');
+        $fields_string = http_build_query($fields, '', '&');
 
         $ch = curl_init($url);
         curl_setopt_array($ch, self::$curl_options);
         curl_setopt_array($ch, array(
             CURLOPT_HEADER      => true,
-            CURLOPT_POST        => count($fields),
+            CURLOPT_POST        => 1,
             CURLOPT_POSTFIELDS  => $fields_string,
-            CURLOPT_HTTPHEADER  => array_merge(array("X-Requested-With: XMLHttpRequest"), $headers)
+            CURLOPT_HTTPHEADER  => $headers
         ));
         if ($cookie != null) {
             curl_setopt_array($ch, array(
                 CURLOPT_COOKIESESSION   => true,
-                CURLOPT_COOKIE          => $cookie,
-                CURLOPT_COOKIEJAR       => $cookiejar
+                CURLOPT_COOKIE          => $cookie
             ));
         }
 
@@ -208,7 +203,7 @@ class Utils
             print_r("POST request to ".$url." sent \r\n");
             print_r("request fields are:  ".$fields_string."\r\n");
             print_r("cookie are:  ".$cookie."\r\n");
-            print_r($retValue."\r\n");
+            //print_r($retValue."\r\n");
 
             $sentHeaders = curl_getinfo($ch);
             print_r($sentHeaders);
@@ -234,27 +229,21 @@ class Utils
         );
     }
 
-    public static function sendGetRequest($url, $fields = array(), $cookie = null, $cookiejar = null) {
-        $fields_string = "";
-        foreach($fields as $key => $value) {
-            $fields_string .= $key.'='.$value.'&';
-        }
-        rtrim($fields_string, '&');
+    public static function sendGetRequest($url, $fields = array(), $headers = array(), $cookie = null, $cookiejar = null) {
+        $fields_string = http_build_query($fields, '', '&');
 
         $ch = curl_init();
         curl_setopt_array($ch, self::$curl_options);
         curl_setopt_array($ch, array(
             CURLOPT_HEADER          => true,
-            // CURLOPT_HTTPHEADER      => array("Content-Type: application/x-www-form-urlencoded; charset=UTF-8", "Host: nfl2go.com:2015"),
-            CURLOPT_USERAGENT       => 'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.2) Gecko/20090729 Firefox/3.5.2 GTB5',
-            CURLOPT_URL             => $url."?".$fields_string
+            CURLOPT_URL             => $url."?".$fields_string,
+            CURLOPT_HTTPHEADER      => $headers
         ));
 
         if ($cookie != null) {
             curl_setopt_array($ch, array(
                 CURLOPT_COOKIESESSION   => true,
-                CURLOPT_COOKIE          => $cookie,
-                CURLOPT_COOKIEJAR       => $cookiejar
+                CURLOPT_COOKIE          => $cookie
             ));
         }
         //print_r("GET (".$url.") request send \r\n");

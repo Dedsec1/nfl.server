@@ -216,7 +216,7 @@ class Utils
             echo "cURL error ({$errno}):\n {$error_message}";
         }
 */
-
+        $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $header = substr($retValue, 0, $header_size);
         $body = substr($retValue, $header_size);
@@ -224,6 +224,7 @@ class Utils
         curl_close($ch);
 
         return array(
+            "code"   => $code,
             "header" => $header,
             "body"   => $body
         );

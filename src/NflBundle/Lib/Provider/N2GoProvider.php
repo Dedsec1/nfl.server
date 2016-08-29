@@ -142,9 +142,14 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
         );
         //print_r($url);
 
-        if (strpos($url['body'], "m3u8?") === false) {
+        if ($url["code"] == 200) {
+            if (strpos($url['body'], "m3u8?") === false) {
+                return "novideo";
+            } else {
+                return $url['body'];
+            }
+        } else {
             return null;
-        } else
-            return $url['body'];
+        }
     }
 }

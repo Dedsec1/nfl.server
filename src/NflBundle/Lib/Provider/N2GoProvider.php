@@ -38,6 +38,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 $res = substr($res, 0, $pos + 4);
                 return str_replace("ipad", $qty, $res);
             } else {
+                print_r($res."\r\n");
                 return null;
             }
         } else
@@ -143,11 +144,11 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
         //print_r($url);
 
         if ($url["code"] == 200) {
-            if (strpos($url['body'], "m3u8?") === false) {
-                return "novideo";
-            } else {
+//            if (strpos($url['body'], "m3u8?") === false) {
+//                return "novideo";
+//            } else {
                 return $url['body'];
-            }
+//            }
         } else {
             return null;
         }

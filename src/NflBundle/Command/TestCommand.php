@@ -24,11 +24,22 @@ class TestCommand extends NflCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $cookie = "";
+        $output->writeln("<comment>Checking login....</comment>");
         if ($this->nflHandler->checkLogin($cookie)) {
             $output->writeln("<fg=cyan>Succesfully logged in</>");
             $output->writeln("<info>".$cookie."</info>");
         } else {
             $output->writeln("<error>cannot login smth goes wrong</error>");
+        }
+
+
+        $output->writeln("<comment>Checking getting URL...</comment>");
+        $url = $this->nflHandler->checkFindGameURL();
+        if ($url != null) {
+            $output->writeln("<fg=cyan>Found game URL succesfully</>");
+            $output->writeln("<info>".$url."</info>");
+        } else {
+            $output->writeln("<error>cannot find game URL</error>");
         }
 /*
         $token = null;

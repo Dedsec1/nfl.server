@@ -268,8 +268,19 @@ class NflHandler extends ContainerAware
 
     }
 
-    public function addLogo(Game &$game, $logo) {
-        $dir = $this->getGameFileDir();
+    public function addLogo(Game &$game, $logo, $dir) {
+        if (empty($dir)) {
+            $dir = $this->getGameFileDir();
+        } else {
+            if (!is_dir($dir)) {
+                $dir = sprintf(
+                    "%s/%s"
+                    , $this->container->getParameter("nfl_path")
+                    , $dir
+                );
+            }
+        }
+
         $mkv = sprintf(
             "%s/%s.mkv"
             , $dir
@@ -287,11 +298,19 @@ class NflHandler extends ContainerAware
         } else {
             $this->sendGameStatus(GameStatusEvent::GAME_ADD_LOGO, $game);
 
-            if ($logo == '') {
+            if (empty($logo)) {
                 $logo = sprintf(
                     "%s/logo.png"
                     , $tmpDir
                 );
+            } else {
+                if (!file_exists($logo)) {
+                    $logo = sprintf(
+                        "%s/%s.png"
+                        , $tmpDir
+                        , $logo
+                    );
+                }
             }
 
             Utils::addLogo(
@@ -366,6 +385,9 @@ class NflHandler extends ContainerAware
     public function checkLogin(&$cookie)
     {
         return $this->nflProvider->login($cookie);
+    }
+    public function checkFindGameURL() {
+        return $this->nflProvider->getGameUrl(56834, "C", 3000);
     }
     /**
      * private methods

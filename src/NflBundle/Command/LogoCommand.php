@@ -27,6 +27,13 @@ class LogoCommand extends NflCommand
                 'Team which Game to be overlayed'
             )
             ->addOption(
+                'dir',
+                'd',
+                InputOption::VALUE_OPTIONAL,
+                'Game file directory',
+                null
+            )
+            ->addOption(
                 'logo',
                 'l',
                 InputOption::VALUE_OPTIONAL,
@@ -40,10 +47,11 @@ class LogoCommand extends NflCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $games      = $this->nflHandler->getGames();
+        $games     = $this->nflHandler->getGames();
 
         $team      = $input->getOption("game");
         $logo      = $input->getOption("logo");
+        $dir       = $input->getOption("dir");
 
         if (empty($team)) {
             $output->writeln("<error>Team option cannot be empty.</error>");
@@ -55,7 +63,7 @@ class LogoCommand extends NflCommand
             foreach ($games as $game) {
                 if (stripos($game->getFileName(), $team) !== false) {
                     $exists = true;
-                    $this->nflHandler->addLogo($game, $logo);
+                    $this->nflHandler->addLogo($game, $logo, $dir);
                 }
             }
         }

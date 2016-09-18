@@ -75,8 +75,8 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 "https://nfl2go.com/Account/Login"
                 , array(
                     "__RequestVerificationToken" => $token,
-                    "Username"                   => "sbabych@gmail.com",
-                    "Password"                   => "1024Welcome!"
+                    "Username"                   => $this->container->getParameter("nfl2go_login"),
+                    "Password"                   => $this->container->getParameter("nfl2go_pass")
                 )
                 , array(
                     "X-Requested-With: XMLHttpRequest"

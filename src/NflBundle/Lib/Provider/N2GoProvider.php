@@ -76,7 +76,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 , array(
                     "__RequestVerificationToken" => $token,
                     "Username"                   => "sbabych@gmail.com",
-                    "Password"                   => "256Welcome!"
+                    "Password"                   => "1024Welcome!"
                 )
                 , array(
                     "X-Requested-With: XMLHttpRequest"

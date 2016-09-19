@@ -342,12 +342,12 @@ class NflHandler extends ContainerAware
             $url = trim(preg_replace('/\s+/', '', $url));
 
             //render topic template
-            $this->renderTemplate($game, $url);
+            //$this->renderTemplate($game, $url);
 
             if (!file_exists($mkv) || ($game->getShift() != false)) {
 
                 //get md5
-                $md5 = $this->nflProvider->getGameMD5($game->getId());
+                $md5 = $this->nflProvider->getGameMD5($game->getId(), $this->conds ? "C" : "A");
                 if ($md5 == null) {
                     $this->sendGameStatus(GameStatusEvent::GAME_MD5_NOT_FOUND, $game);
                     return 0;
@@ -442,7 +442,7 @@ class NflHandler extends ContainerAware
         if (!$this->conds){
 
             //get md5
-            $md5 = $this->nflProvider->getGameMD5($game->getId());
+            $md5 = $this->nflProvider->getGameMD5($game->getId(), $this->conds ? "C" : "A");
             if ($md5 != null) {
                 //get video duration
                 $this->getVideoInfo($game, $url . "?" . $md5);

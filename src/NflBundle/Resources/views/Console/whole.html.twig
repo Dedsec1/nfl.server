@@ -1,4 +1,4 @@
-NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ game.time|date("d.m.Y") }} / {{ game.away }} @ {{ game.home }} [Американский футбол, WEB-DL HD/{{ nfl.resolution }}, MKV/H.264, EN]
+NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ game.date|date("d.m.Y") }} / {{ game.away }} @ {{ game.home }} [Американский футбол, WEB-DL HD/{{ nfl.resolution }}, MKV/H.264, EN]
 
 [center][size=150][font=Georgia][color=darkblue]NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ game.time|date("d.m.Y") }} [/color][/font][/size][/center]
 [hr][/hr]
@@ -7,7 +7,7 @@ NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ 
 [imgleft]{{ game.logoAway }}[/imgleft]
 [imgright]{{ game.logoHome }}[/imgright]
 [center][b]Вид спорта[/b]: Американский футбол
-[b]Дата/Год выпуска[/b]: {{ game.time|date("d.m.Y") }}
+[b]Дата/Год выпуска[/b]: {{ game.date|date("d.m.Y") }}
 [b]Язык комментариев[/b]: Английский
 [b]Участники[/b]: {{ game.away }} @ {{ game.home }}
 

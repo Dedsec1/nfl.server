@@ -345,7 +345,6 @@ class NflHandler extends ContainerAware
             $this->renderTemplate($game, $url);
 
             if (!file_exists($mkv) || ($game->getShift() != false)) {
-
                 //get md5
                 $md5 = $this->nflProvider->getGameMD5($game->getId(), $this->conds ? "C" : "A");
                 if ($md5 == null) {

@@ -342,7 +342,7 @@ class NflHandler extends ContainerAware
             $url = trim(preg_replace('/\s+/', '', $url));
 
             //render topic template
-            //$this->renderTemplate($game, $url);
+            $this->renderTemplate($game, $url);
 
             if (!file_exists($mkv) || ($game->getShift() != false)) {
 
@@ -440,14 +440,14 @@ class NflHandler extends ContainerAware
 
     private function renderTemplate(&$game, $url) {
         if (!$this->conds){
-
+/*
             //get md5
             $md5 = $this->nflProvider->getGameMD5($game->getId(), $this->conds ? "C" : "A");
             if ($md5 != null) {
                 //get video duration
                 $this->getVideoInfo($game, $url . "?" . $md5);
             }
-
+*/
             $topic = $this
                 ->templating
                 ->render(

@@ -26,6 +26,11 @@ class Game
     private $home;
     private $score;
 
+    private $away_city;
+    private $home_city;
+    private $away_name;
+    private $home_name;
+
     private $logo_away;
     private $logo_home;
 
@@ -79,6 +84,11 @@ class Game
 
         $this->away     = NflTeams::$teams[$awayId]["city"]." ".NflTeams::$teams[$awayId]["name"];
         $this->home     = NflTeams::$teams[$homeId]["city"]." ".NflTeams::$teams[$homeId]["name"];
+
+        $this->away_city = NflTeams::$teams[$awayId]["city"];
+        $this->home_city = NflTeams::$teams[$homeId]["city"];
+        $this->away_name = NflTeams::$teams[$awayId]["name"];
+        $this->home_name = NflTeams::$teams[$homeId]["name"];
 
         $this->game      = $awayId."@".$homeId;
         $this->id        = intval($xml["id"]);
@@ -264,6 +274,70 @@ class Game
     public function setScore($score)
     {
         $this->score = $score;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAwayCity()
+    {
+        return $this->away_city;
+    }
+
+    /**
+     * @param mixed $away_city
+     */
+    public function setAwayCity($away_city)
+    {
+        $this->away_city = $away_city;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHomeCity()
+    {
+        return $this->home_city;
+    }
+
+    /**
+     * @param mixed $home_city
+     */
+    public function setHomeCity($home_city)
+    {
+        $this->home_city = $home_city;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAwayName()
+    {
+        return $this->away_name;
+    }
+
+    /**
+     * @param mixed $away_name
+     */
+    public function setAwayName($away_name)
+    {
+        $this->away_name = $away_name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHomeName()
+    {
+        return $this->home_name;
+    }
+
+    /**
+     * @param mixed $home_name
+     */
+    public function setHomeName($home_name)
+    {
+        $this->home_name = $home_name;
     }
 
     /**

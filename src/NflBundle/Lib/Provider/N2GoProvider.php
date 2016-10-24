@@ -43,7 +43,7 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
                 return str_replace("ipad", $qty, $res);
             } else {
                 print_r("WRONG RESPONSE  \r\n");
-                //print_r($res."\r\n");
+                print_r($res."\r\n");
                 return null;
             }
         } else

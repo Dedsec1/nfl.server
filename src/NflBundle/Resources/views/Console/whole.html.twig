@@ -1,3 +1,4 @@
+-------720pier-------
 NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ game.date|date("d.m.Y") }} / {{ game.away }} @ {{ game.home }} [Американский футбол, WEB-DL HD/{{ nfl.resolution }}, MKV/H.264, EN]
 
 [center][size=150][font=Georgia][color=darkblue]NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ game.date|date("d.m.Y") }} [/color][/font][/size][/center]
@@ -31,3 +32,44 @@ NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Week {{ "%02d"|format(nfl.week) }} / {{ 
 [/spoiler]
 
 
+
+-------TYT Tracker-------
+NFL.{{ nfl.year }}.Week.{{ "%02d"|format(nfl.week) }}.{{ game.awayName }}.at.{{ game.homeName }}.{{ nfl.resolution }}
+
+Released by: xsba
+League: NFL {{ nfl.year }}/{{  nfl.year + 1 }}
+
+Event: NFL.2016.Week.{{ "%02d"|format(nfl.week) }} | {{ game.away }} @ {{ game.home }}
+
+{% if nfl.resolution == "720p" %}
+Video Codec: H.264 (.mkv container)
+Video Bitrate: ~3000 kbps
+Video Framerate: 29.970 fps
+Resolution: 1280x720
+{% endif %}
+Audio Codec: AAC LC | 44.1 KHz stereo | 125 kbps
+___________________________________________________________
+
+Capper's notes:
+
+Commercials and Half Time removed.
+
+
+-------TYT Forum-------
+[SIZE=4][COLOR=#808080][I]Released by: xsba[/I]
+[I]League: NFL {{ nfl.year }}/{{  nfl.year + 1 }}[/I]
+
+[I]Event: NFL.{{ nfl.year }}.Week.{{ "%02d"|format(nfl.week) }} | {{ game.away }} @ {{ game.home }}[/I]
+
+{% if nfl.resolution == "720p" %}
+[I]Video Codec: H.264 (.mkv container)[/I]
+[I]Video Bitrate: ~3000 kbps[/I]
+[I]Video Framerate: 29.970 fps[/I]
+[I]Resolution: 1280x720[/I]
+[I]Audio Codec: AAC LC | 44.1 KHz stereo | 125 kbps[/I]
+{% endif %}
+[/COLOR][/SIZE]
+
+[FONT=Georgia][SIZE=5][COLOR=#663300][B]
+[URL='http://tenyardtracker.com/browse.php?cat=60'][IMG]http://tenyardtracker.com/assets/images/caticons/cat_nfl.png[/IMG][/URL][URL='http://tenyardtracker.com/details.php?id=']NFL.{{ nfl.year }}.Week.{{ "%02d"|format(nfl.week) }}.{{ game.awayName }}.at.{{ game.homeName }}.{{ nfl.resolution }}[/URL]
+[/B][/COLOR][/SIZE][/FONT]

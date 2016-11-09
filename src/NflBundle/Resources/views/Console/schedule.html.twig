@@ -1,3 +1,4 @@
+-------720pier-------
 [center]
 {% if schedule.byes %}
 [size=120][color=gray][i] Byes: {{ schedule.byes|join(', ') }}[/i][/color][/size]
@@ -20,3 +21,39 @@
 {% endfor %}
 {% endfor %}
 [/center]
+
+
+-------TYT-------
+{% if schedule.byes %}
+Byes: {{ schedule.byes|join(', ') }}
+
+{% endif %}
+{% for key, times in schedule.week %}
+{% if loop.index0 > 0 %}
+
+{% endif %}
+{{ key }}
+{% for time in times %}
+{% if loop.index0 > 0 %}
+
+{% endif %}
+[{{ time.timeEST }} EST]
+{% for game in time.games %}
+{{ game }}
+{% endfor %}
+{% endfor %}
+{% endfor %}
+
+
+-------Google Spreadsheet-------
+{% if schedule.byes %}
+Byes	{{ schedule.byes|join(', ') }}
+
+{% endif %}
+{% for key, times in schedule.week %}
+{% for time in times %}
+{% for game in time.games %}
+{{ key }}	{{ game }}	{{ time.timeEST }} EST
+{% endfor %}
+{% endfor %}
+{% endfor %}

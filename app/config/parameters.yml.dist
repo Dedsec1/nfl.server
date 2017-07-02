@@ -18,7 +18,7 @@ parameters:
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
 
-    nfl_kick_off:  8 September 2016 midnight
+    nfl_kick_off:  7 September 2017 midnight
     nfl_path:      e:/NFL/
     nfl_data_dir:  \@gamepass
     nfl_temp_dir:  \@tmp

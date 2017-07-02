@@ -257,6 +257,7 @@ class NflTeams
             "statCode" => "SD",
             "statId"   => "4400",
             "color"    => 16563220,
+            "years"    => ["1995/2016"],
             "logo"     => "http://funkyimg.com/i/MQU8.jpg"
         ],
         "sf" => [
@@ -296,6 +297,16 @@ class NflTeams
             "color"    => 5942,
             "years"    => ["2016"],
             "logo"     => "http://funkyimg.com/i/MQUo.jpg"
+        ],
+        "lac" => [
+            "city"     => "Los Angeles",
+            "name"     => "Chargers",
+            "id"       => "LAC",
+            "statCode" => "LAC",
+            "statId"   => "4400",
+            "color"    => 16563220,
+            "years"    => ["2017"],
+            "logo"     => "http://funkyimg.com/i/MQU8.jpg"
         ],
         "tb" => [
             "city"     => "Tampa Bay",

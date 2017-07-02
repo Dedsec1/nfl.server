@@ -31,3 +31,17 @@
 {% endif %}
 [/center]
 [/spoiler]
+
+
+
+-------Google Spreadsheet-------
+{% if rating.finished %}
+{% for game in rating.finished %}
+{{ game.away_team }} @ {{ game.home_team }}	{{ game.gex }}	{{ game.gex_predict }}
+{% endfor %}
+{% endif %}
+{% if rating.future %}
+{% for game in rating.future %}
+{{ game.away_team }} @ {{ game.home_team }}	{{ game.gex_predict }}
+{% endfor %}
+{% endif %}

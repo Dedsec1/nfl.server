@@ -56,7 +56,7 @@ class Game
             default:
                 $index = 2;
         };
-
+/*
         $gameId = sprintf("%d_%d_%s_%s_%d_h_%s"
             , $index
             , $xml['id']
@@ -65,6 +65,13 @@ class Game
             , $conf["year"]
             , $conf["conds"] ? 'snap2w' : 'whole'
         );
+*/
+        $gameId = sprintf("%s_%s_%d"
+            , $awayId
+            , $homeId
+            , $conf["year"]
+        );
+
         $fileName = sprintf("NFL%d.%s%02d.%s-%s.%s%s"
             , $conf["year"]
             , $conf["type"] == "pre" ? "PRE" : "W"

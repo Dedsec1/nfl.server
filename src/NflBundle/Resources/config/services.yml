@@ -64,6 +64,13 @@ services:
       tags:
           -  { name: console.command }
 
+  nfl.command.template:
+      class: NflBundle\Command\TemplateCommand
+      arguments:
+          - @nfl.lib.nflhandler
+      tags:
+          -  { name: console.command }
+
   nfl.command.test:
       class: NflBundle\Command\TestCommand
       arguments:

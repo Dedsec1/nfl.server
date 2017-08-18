@@ -340,6 +340,7 @@ class NflHandler extends ContainerAware
         if (preg_match_all($pattern, $currentFile, $matches)) {
             $url = implode("\n", $matches[0]);
             $url = trim(preg_replace('/\s+/', '', $url));
+            $url = str_replace("_pc", "_".$this->qlty, $url);
 
             //render topic template
             $this->renderTemplate($game, $url);
@@ -437,7 +438,31 @@ class NflHandler extends ContainerAware
         return $file;
     }
 
-    private function renderTemplate(&$game, $url) {
+    public function renderCondsTemplate() {
+        $schedule = $this->getSchedule();
+        $topic = $this
+            ->templating
+            ->render(
+                "NflBundle:Console:conds.html.twig"
+                , array(
+                    'nfl'       => $this
+                    ,'schedule' => $schedule
+                )
+            )
+        ;
+
+        file_put_contents(
+            sprintf(
+                "%s/%d_conds_%02d.txt"
+                , $this->container->getParameter("nfl_path")
+                , $this->year
+                , $this->week
+            )
+            , $topic
+        );
+    }
+
+    public function renderTemplate(&$game, $url) {
         if (!$this->conds){
 /*
             //get md5

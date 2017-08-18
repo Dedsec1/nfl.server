@@ -142,7 +142,7 @@ class Utils
     public static function stream($url, $mkv, $shift = null, $ffmpeg, $acodec, $logo = ""){
         //print_r($url);
         if ($shift == null) {
-            $cmd = sprintf("%s/ffmpeg -i \"%s\" -c:a %s %s \"%s\" " //-c:a libvo_aacenc
+            $cmd = sprintf("%s/ffmpeg -v info -stats -i \"%s\" -c:a %s %s \"%s\" " //-c:a libvo_aacenc
                 , $ffmpeg
                 , $url
                 , $acodec
@@ -152,7 +152,7 @@ class Utils
                 , $mkv
             );
         } else {
-            $cmd = sprintf("%s/ffmpeg -ss %s -i \"%s\" -ss 0 -c:v copy -c:a %s \"%s\" " //-c:a libvo_aacenc
+            $cmd = sprintf("%s/ffmpeg -v info -stats  -ss %s -i \"%s\" -ss 0 -c:v copy -c:a %s \"%s\" " //-c:a libvo_aacenc
                 , $ffmpeg
                 , $shift
                 , $url
@@ -160,7 +160,7 @@ class Utils
                 , $mkv
             );
         }
-//        print_r($cmd);
+        //print_r($cmd);
 
         if (strtoupper(substr(PHP_OS, 0, 3) === 'WIN')) {
             //print_r("WIN");

@@ -1,0 +1,58 @@
+{% set type = nfl.type == "reg" ? "Regular" : "Pre" %}
+
+-------720pier-------
+NFL {{ nfl.year }}-{{ nfl.year + 1 }} {% if nfl.type == "pre"%} / PS {% endif %}/ Week {{ "%02d"|format(nfl.week) }} / Condensed Games / Сжатые игры [Американский футбол, WEB-DL/{{ nfl.resolution }}, MKV/H.264, EN]
+
+[center][size=160][font=Georgia][color=darkblue]NFL {{ nfl.year }}-{{ nfl.year + 1 }} / Condensed Games / Сжатые игры[/color][/font][/size][/center]
+[hr][/hr]
+[center][size=160][color=darkred][font=Georgia]{{ type }} Season / Week {{ "%02d"|format(nfl.week) }}[/font][/color][/size][/center]
+[hr][/hr]
+[imgright]http://i65.fastpic.ru/big/2014/0805/6b/82a53924ddd77c47d1c041a63bbac76b.jpg[/imgright]
+[b]Вид спорта[/b]: Американский футбол
+[b]Дата/Год выпуска[/b]: Week {{ "%02d"|format(nfl.week) }} / {{ nfl.year }}-{{ nfl.year + 1 }}
+[b]Язык комментариев[/b]: Английский
+[b]Описание[/b]: Сжатые игры (Condensed Games) или Сжатый обзор игры - позволяет показать вам каждый розыгрыш всей игры, от начального до финального свистка, в течение примерно 40 минут. Включает в себя штрафы, челленджи и рассматриваемые повторы игровых моментов.
+
+[b]Автор рипа/записи[/b]: xsba
+[b]Качество[/b]: WEB-DL/{{ nfl.resolution }}
+[b]Формат видео[/b]: MKV
+{% if nfl.resolution == "720p" %}
+[b]Видео[/b]: H.264 | ~ 3000 kbps | 1280x720 | 29.970 fps |
+{% endif %}
+[b]Аудио[/b]: AAC | 44100 Hz | stereo | 92 kbps |
+
+
+[spoiler="week {{ "%02d"|format(nfl.week) }}"]
+[center]
+{% if schedule.byes %}
+[size=120][color=gray][i] Byes: {{ schedule.byes|join(', ') }}[/i][/color][/size]
+
+{% endif %}
+{% for key, times in schedule.week %}
+{% if loop.index0 > 0 %}
+
+
+{% endif %}
+[size=130][font=Georgia][color=darkblue][b] {{ key }} [/b][/color][/font][/size]
+{% for time in times %}
+{% if loop.index0 > 0 %}
+
+{% endif %}
+[size=110][font=Georgia][color=gray][i][{{ time.timeEST }} EST] [{{ time.timeKyiv }} Kiev] [{{ time.timeMoscow }} Moscow][/i][/color][/font][/size]
+{% for game in time.games %}
+[size=120][color=indigo] {{ game }} [/color][/size]
+{% endfor %}
+{% endfor %}
+{% endfor %}
+[/center]
+[/spoiler][spoiler="Скриншоты"]
+
+[/spoiler]
+[hr][/hr]
+[size=120][color=red][center]Внимание! Раздача ведётся путём добавления новых выпусков[/center][/color][/size]
+
+-------TYT Tracker-------
+
+
+
+-------TYT Forum-------

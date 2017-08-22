@@ -22,7 +22,7 @@ parameters:
     nfl_path:      e:/NFL/
     nfl_data_dir:  \@gamepass
     nfl_temp_dir:  \@tmp
-    nfl_ffmpeg:    e:/Installs/video/ffmpeg-20141130/bin
+    nfl_ffmpeg:    e:/Installs/video/ffmpeg-20170820/bin
     nfl_acodec:    libvo_aacenc
     nfl2go_login:  test
     nfl2go_pass:   test

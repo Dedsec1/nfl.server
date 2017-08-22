@@ -1,0 +1,22 @@
+[center]
+{% if schedule.byes %}
+[size=120][color=gray][i] Byes: {{ schedule.byes|join(', ') }}[/i][/color][/size]
+
+{% endif %}
+{% for key, times in schedule.week %}
+{% if loop.index0 > 0 %}
+
+
+{% endif %}
+[size=130][font=Georgia][color=darkblue][b] {{ key }} [/b][/color][/font][/size]
+{% for time in times %}
+{% if loop.index0 > 0 %}
+
+{% endif %}
+[size=110][font=Georgia][color=gray][i][{{ time.timeEST }} EST] [{{ time.timeKyiv }} Kiev] [{{ time.timeMoscow }} Moscow][/i][/color][/font][/size]
+{% for game in time.games %}
+[size=120][color=indigo] {{ game }} [/color][/size]
+{% endfor %}
+{% endfor %}
+{% endfor %}
+[/center]

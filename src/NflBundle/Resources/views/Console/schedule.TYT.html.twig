@@ -1,0 +1,19 @@
+{% if schedule.byes %}
+Byes: {{ schedule.byes|join(', ') }}
+
+{% endif %}
+{% for key, times in schedule.week %}
+{% if loop.index0 > 0 %}
+
+{% endif %}
+{{ key }}
+{% for time in times %}
+{% if loop.index0 > 0 %}
+
+{% endif %}
+[{{ time.timeEST }} EST]
+{% for game in time.games %}
+{{ game }}
+{% endfor %}
+{% endfor %}
+{% endfor %}

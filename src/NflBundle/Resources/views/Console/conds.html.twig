@@ -23,36 +23,51 @@ NFL {{ nfl.year }}-{{ nfl.year + 1 }} {% if nfl.type == "pre"%} / PS {% endif %}
 
 
 [spoiler="week {{ "%02d"|format(nfl.week) }}"]
-[center]
-{% if schedule.byes %}
-[size=120][color=gray][i] Byes: {{ schedule.byes|join(', ') }}[/i][/color][/size]
-
-{% endif %}
-{% for key, times in schedule.week %}
-{% if loop.index0 > 0 %}
-
-
-{% endif %}
-[size=130][font=Georgia][color=darkblue][b] {{ key }} [/b][/color][/font][/size]
-{% for time in times %}
-{% if loop.index0 > 0 %}
-
-{% endif %}
-[size=110][font=Georgia][color=gray][i][{{ time.timeEST }} EST] [{{ time.timeKyiv }} Kiev] [{{ time.timeMoscow }} Moscow][/i][/color][/font][/size]
-{% for game in time.games %}
-[size=120][color=indigo] {{ game }} [/color][/size]
-{% endfor %}
-{% endfor %}
-{% endfor %}
-[/center]
+{% include 'NflBundle:Console:schedule.720p.html.twig' %}
 [/spoiler][spoiler="Скриншоты"]
 
 [/spoiler]
 [hr][/hr]
 [size=120][color=red][center]Внимание! Раздача ведётся путём добавления новых выпусков[/center][/color][/size]
 
+
 -------TYT Tracker-------
 
+NFL.{{ nfl.year }}.{% if nfl.type == "pre"%}PS.{% endif %}Week.{{ "%02d"|format(nfl.week) }}.Condensed.Games.720p
+
+
+Released by: xsba
+League: NFL {{ nfl.year }}/{{ nfl.year + 1 }}
+
+Event: Week {{ "%02d"|format(nfl.week) }} | Condensed Games
+{% if nfl.resolution == "720p" %}
+Video Codec: H.264 (.mkv container)
+Video Bitrate: 2800 kbps
+Video Framerate: 29.970 fps
+Resolution: 1280x720
+{% endif %}
+Audio Codec: AAC LC; 44100 Hz; stereo; 125 kbps
+___________________________________________________________
+{% include 'NflBundle:Console:schedule.TYT.html.twig' %}
+___________________________________________________________
+Capper's notes:
+Commercials and Half Time removed.
 
 
 -------TYT Forum-------
+[URL='http://tenyardtracker.com/browse.php?cat=47'][IMG]http://tenyardtracker.com/assets/images/caticons/cat_condensed.png[/IMG][/URL]
+[SIZE=4][COLOR=#808080][I]Released by: xsba[/I]
+[I]League: NFL {{ nfl.year }}[/I]
+
+[I]Event: Week {{ "%02d"|format(nfl.week) }} | Condensed Games[/I]
+{% if nfl.resolution == "720p" %}
+[I]Video Codec: H.264 (.mkv container)[/I]
+[I]Video Bitrate: 2800 kbps[/I]
+[I]Video Framerate: 29.970 fps[/I]
+[I]Resolution: 1280x720[/I]
+{% endif %}
+[I]Audio Codec: AAC LC; 44100 Hz; stereo; 125 kbps[/I]
+[/COLOR][/SIZE]
+
+
+[FONT=Georgia][SIZE=5][COLOR=#663300][URL='http://tenyardtracker.com/details.php?id=']NFL.{{ nfl.year }}.{% if nfl.type == "pre"%}PS.{% endif %}Week.{{ "%02d"|format(nfl.week) }}.Condensed.Games.720p[/URL][/COLOR][/SIZE][/FONT]

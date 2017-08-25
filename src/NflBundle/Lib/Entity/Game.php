@@ -18,6 +18,8 @@ class Game
 
     private $id;
     private $gameId;
+    private $gameIdNew;
+
     private $game;
     private $fileName;
     private $elias;
@@ -72,6 +74,11 @@ class Game
             , $conf["year"]
         );
 
+        $gameIdNew = sprintf("n2/%s/default/%d"
+            , $conf["conds"] ? 'condensed' : 'archive'
+            , $xml['id']
+        );
+
         $fileName = sprintf("NFL%d.%s%02d.%s-%s.%s%s"
             , $conf["year"]
             , $conf["type"] == "pre" ? "PRE" : "W"
@@ -86,8 +93,9 @@ class Game
         $this->time     = $xml['t'];
         $this->datetime = $xml['d']." ".$xml['t'];
 
-        $this->gameId   = $gameId;
-        $this->fileName = $fileName;
+        $this->gameId       = $gameId;
+        $this->gameIdNew    = $gameIdNew;
+        $this->fileName     = $fileName;
 
         $this->away     = NflTeams::$teams[$awayId]["city"]." ".NflTeams::$teams[$awayId]["name"];
         $this->home     = NflTeams::$teams[$homeId]["city"]." ".NflTeams::$teams[$homeId]["name"];
@@ -185,6 +193,22 @@ class Game
     public function setGameId($gameId)
     {
         $this->gameId = $gameId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGameIdNew()
+    {
+        return $this->gameIdNew;
+    }
+
+    /**
+     * @param mixed $gameIdNew
+     */
+    public function setGameIdNew($gameIdNew)
+    {
+        $this->gameIdNew = $gameIdNew;
     }
 
     /**

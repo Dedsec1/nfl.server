@@ -247,7 +247,7 @@ class NflHandler extends ContainerAware
         } elseif (round(($currentDate - $date->getTimestamp())/3600, 1) < 3) {
             $this->sendGameStatus(GameStatusEvent::GAME_IS_RUNNING, $game);
         } else {
-            if (strpos($currentFile, $game->getGameId()) > 0) {
+            if ((strpos($currentFile, $game->getGameId()) > 0) || (strpos($currentFile, $game->getGameIdNew()) > 0)) {
                 $this->sendGameStatus(GameStatusEvent::GAME_URL_EXISTS, $game);
             } else {
                 $url = $this->findGameUrl($game->getId());
@@ -324,40 +324,36 @@ class NflHandler extends ContainerAware
     }
 
     public function streamGame(Game &$game) {
-        $currentFile = file_get_contents($this->getGameUriFile());
-        $dir         = $this->getGameFileDir();
+        $dir = $this->getGameFileDir();
         $mkv = sprintf(
             "%s/%s.mkv"
             , $dir
             , $game->getFileName()
         );
 
+        $url = $this->getGameUrl($game);
 
-        $pattern = preg_quote($game->getGameId(), '/');
-        // finalise the regular expression, matching the whole line
-        $pattern = "/^.*$pattern.*\$/m";
-
-        if (preg_match_all($pattern, $currentFile, $matches)) {
-            $url = implode("\n", $matches[0]);
-            $url = trim(preg_replace('/\s+/', '', $url));
-            $url = str_replace("_pc", "_".$this->qlty, $url);
-
+        if (!is_null($url)) {
             //render topic template
             $this->renderTemplate($game, $url);
 
             if (!file_exists($mkv) || ($game->getShift() != false)) {
                 //get md5
-                $md5 = $this->nflProvider->getGameMD5($game->getId(), $this->conds ? "C" : "A");
+
+                $md5 = $this->nflProvider->getGameMD5($game->getId(), $this->conds ? "C" : "A", true);
                 if ($md5 == null) {
                     $this->sendGameStatus(GameStatusEvent::GAME_MD5_NOT_FOUND, $game);
                     return 0;
+                } else {
+                    $md5 = str_replace("_pc", "_" . $this->qlty, $md5);
+                    $md5 = str_replace("master", "master_" . $this->qlty, $md5);
                 }
 
                 $this->sendGameStatus(GameStatusEvent::GAME_STREAMING, $game);
 
                 if ($game->getShift() != false) {
                     Utils::stream(
-                        $url . "?" . $md5
+                        $md5//$url . "?" . $md5
                         , sprintf("%s/%s2.mkv", $dir, $game->getFileName())
                         , $game->getShift()
                         , $this->container->getParameter("nfl_ffmpeg")
@@ -365,7 +361,7 @@ class NflHandler extends ContainerAware
                     );
                 } else {
                     Utils::stream(
-                        $url . "?" . $md5
+                        $md5//$url . "?" . $md5
                         , $mkv
                         , null
                         , $this->container->getParameter("nfl_ffmpeg")
@@ -405,6 +401,29 @@ class NflHandler extends ContainerAware
             return $result;
         } else
             return true;
+    }
+
+    private function getGameUrl($game) {
+        $url = null;
+        $currentFile = file_get_contents($this->getGameUriFile());
+
+        $pattern = preg_quote($game->getGameId(), '/');
+        // finalise the regular expression, matching the whole line
+        $pattern = "/^.*$pattern.*\$/m";
+
+        if (preg_match_all($pattern, $currentFile, $matches)) {
+            $url = implode("\n", $matches[0]);
+            $url = trim(preg_replace('/\s+/', '', $url));
+        } else {
+            $pattern = preg_quote($game->getGameIdNew(), '/');
+            // finalise the regular expression, matching the whole line
+            $pattern = "/^.*$pattern.*\$/m";
+            if (preg_match_all($pattern, $currentFile, $matches)) {
+                $url = implode("\n", $matches[0]);
+                $url = trim(preg_replace('/\s+/', '', $url));
+            }
+        }
+        return $url;
     }
 
     private function getGameFileDir() {

@@ -13,7 +13,7 @@ use NflBundle\Lib\Utils\Utils;
 
 class N2GoProvider extends ContainerAware implements NflProviderInterface
 {
-    public function getGameMD5($gameId, $type) {
+    public function getGameMD5($gameId, $type, $getFullUrl = false) {
         print_r("getGameMD5  \r\n");
         $res = $this->getWatchUrl($gameId, $type);
 
@@ -21,7 +21,11 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
         if ($res != null) {
             $pos = strpos($res, "m3u8?");
             if ($pos !== false) {
-                return substr($res, $pos + 5);
+                if ($getFullUrl) {
+                    return $res;
+                } else {
+                    return substr($res, $pos + 5);
+                }
             } else {
                 //print_r($res."\r\n");
                 print_r("WRONG RESPONSE  \r\n");

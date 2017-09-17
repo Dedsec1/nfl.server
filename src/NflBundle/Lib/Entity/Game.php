@@ -74,7 +74,7 @@ class Game
             , $conf["year"]
         );
 
-        $gameIdNew = sprintf("n2/%s/default/%d"
+        $gameIdNew = sprintf("%s/default/%d"
             , $conf["conds"] ? 'condensed' : 'archive'
             , $xml['id']
         );

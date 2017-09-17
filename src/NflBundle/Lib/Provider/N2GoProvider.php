@@ -190,9 +190,12 @@ class N2GoProvider extends ContainerAware implements NflProviderInterface
     private function sendWatchRequest($gameId, $type, $cookie) {
         $url =  Utils::sendPostRequest(
             "http://app.nfl2go.com/Player/Watch" //GetGame
+
             , array(
-                'code'         => $gameId,
-                'type'         => $type,
+                'code'  => $gameId,
+                'type'  => $type,
+                'alt'   => "true",
+                'quality' => 2
             )
             , array(
                  "Origin: http://app.nfl2go.com"

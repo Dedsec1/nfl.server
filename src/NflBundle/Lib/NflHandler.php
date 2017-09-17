@@ -323,7 +323,7 @@ class NflHandler extends ContainerAware
         }
     }
 
-    public function streamGame(Game &$game) {
+    public function streamGame(Game &$game, $proxy = null) {
         $dir = $this->getGameFileDir();
         $mkv = sprintf(
             "%s/%s.mkv"
@@ -346,7 +346,7 @@ class NflHandler extends ContainerAware
                     return 0;
                 } else {
                     $md5 = str_replace("_pc", "_" . $this->qlty, $md5);
-                    $md5 = str_replace("master", "master_" . $this->qlty, $md5);
+                    //$md5 = str_replace("master", "master_" . $this->qlty, $md5);
                 }
 
                 $this->sendGameStatus(GameStatusEvent::GAME_STREAMING, $game);
@@ -358,6 +358,7 @@ class NflHandler extends ContainerAware
                         , $game->getShift()
                         , $this->container->getParameter("nfl_ffmpeg")
                         , $this->container->getParameter("nfl_acodec")
+                        , $proxy
                     );
                 } else {
                     Utils::stream(
@@ -366,6 +367,8 @@ class NflHandler extends ContainerAware
                         , null
                         , $this->container->getParameter("nfl_ffmpeg")
                         , $this->container->getParameter("nfl_acodec")
+                        , null
+                        , $proxy
                     );
                 }
                 return 1;

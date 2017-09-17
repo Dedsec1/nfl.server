@@ -139,14 +139,15 @@ class Utils
 */
     }
 
-    public static function stream($url, $mkv, $shift = null, $ffmpeg, $acodec, $logo = ""){
+    public static function stream($url, $mkv, $shift = null, $ffmpeg, $acodec, $logo = null, $proxy = null){
         //print_r($url);
         if ($shift == null) {
-            $cmd = sprintf("%s/ffmpeg -user_agent \"PS4 libhttp/1.60\" -v info -stats -i \"%s\" -c:a %s %s \"%s\" " //-c:a libvo_aacenc
+            $cmd = sprintf("%s/ffmpeg -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36\" -v info -stats %s -i \"%s\" -map 0:m:variant_bitrate:3668828 -c:a %s %s \"%s\" " //-c:a libvo_aacenc
                 , $ffmpeg
+                , is_null($proxy) ? "" : "-http_proxy ". $proxy
                 , $url
                 , $acodec
-                , $logo == "" ?
+                , is_null($logo) ?
                     "-c:v copy" :
                     "-vcodec libx264 -vf \"movie=".$logo." [wm]; [in][wm] overlay=main_w-overlay_w-10:main_h-overlay_h-10 [out]\" "
                 , $mkv
@@ -160,7 +161,7 @@ class Utils
                 , $mkv
             );
         }
-        //print_r($cmd);
+        print_r($cmd);
 
         if (strtoupper(substr(PHP_OS, 0, 3) === 'WIN')) {
             //print_r("WIN");

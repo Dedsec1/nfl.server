@@ -37,6 +37,13 @@ class StreamCommand extends NflCommand
                 'Time shift for streaming',
                 null
             )
+            ->addOption(
+                'proxy',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'Proxy IP',
+                null
+            )
         ;
 
         parent::configure();
@@ -47,7 +54,7 @@ class StreamCommand extends NflCommand
         $games      = $this->nflHandler->getGames();
         $sgame      = $input->getOption("game");
         $shift      = $input->getOption("shift");
-
+        $proxy      = $input->getOption("proxy");
 
         if ($games) {
             foreach ($games as $game) {
@@ -58,7 +65,7 @@ class StreamCommand extends NflCommand
 
                 $game->setShift($is_shift ? $shift : false);
 
-                if ($this->nflHandler->streamGame($game)) {
+                if ($this->nflHandler->streamGame($game, $proxy)) {
                     $this->isStreaming = true;
                     break;
                 }

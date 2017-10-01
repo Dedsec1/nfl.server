@@ -323,7 +323,7 @@ class NflHandler extends ContainerAware
         }
     }
 
-    public function streamGame(Game &$game, $proxy = null) {
+    public function streamGame(Game &$game, $program = null, $proxy = null) {
         $dir = $this->getGameFileDir();
         $mkv = sprintf(
             "%s/%s.mkv"
@@ -358,6 +358,7 @@ class NflHandler extends ContainerAware
                         , $game->getShift()
                         , $this->container->getParameter("nfl_ffmpeg")
                         , $this->container->getParameter("nfl_acodec")
+                        , $program
                         , $proxy
                     );
                 } else {
@@ -367,7 +368,7 @@ class NflHandler extends ContainerAware
                         , null
                         , $this->container->getParameter("nfl_ffmpeg")
                         , $this->container->getParameter("nfl_acodec")
-                        , null
+                        , $program
                         , $proxy
                     );
                 }

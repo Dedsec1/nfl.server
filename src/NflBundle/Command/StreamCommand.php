@@ -38,8 +38,15 @@ class StreamCommand extends NflCommand
                 null
             )
             ->addOption(
+                'program',
+                'p',
+                InputOption::VALUE_OPTIONAL,
+                'Stream program option',
+                null
+            )
+            ->addOption(
                 'proxy',
-                null,
+                'pr',
                 InputOption::VALUE_OPTIONAL,
                 'Proxy IP',
                 null
@@ -55,6 +62,7 @@ class StreamCommand extends NflCommand
         $sgame      = $input->getOption("game");
         $shift      = $input->getOption("shift");
         $proxy      = $input->getOption("proxy");
+        $program    = $input->getOption("program");
 
         if ($games) {
             foreach ($games as $game) {
@@ -65,7 +73,7 @@ class StreamCommand extends NflCommand
 
                 $game->setShift($is_shift ? $shift : false);
 
-                if ($this->nflHandler->streamGame($game, $proxy)) {
+                if ($this->nflHandler->streamGame($game, $program, $proxy)) {
                     $this->isStreaming = true;
                     break;
                 }

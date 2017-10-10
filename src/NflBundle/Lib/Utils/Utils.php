@@ -142,11 +142,11 @@ class Utils
     public static function stream($url, $mkv, $shift = null, $ffmpeg, $acodec, $program = null, $logo = null, $proxy = null){
         //print_r($url);
         if ($shift == null) {
-            $cmd = sprintf("%s/ffmpeg -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36\" -v info -stats %s -i \"%s\" -map 0:p:%d -c:a %s %s \"%s\" " //-c:a libvo_aacenc
+            $cmd = sprintf("%s/ffmpeg -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36\" -v info -stats %s -i \"%s\" %s -c:a %s %s \"%s\" " //-c:a libvo_aacenc
                 , $ffmpeg
                 , is_null($proxy) ? "" : "-http_proxy ". $proxy
                 , $url
-                , is_null($program) ? 7 : $program
+                , is_null($program) ? "" : "-map 0:p:" . $program
                 , $acodec
                 , is_null($logo) ?
                     "-c:v copy" :

@@ -38,7 +38,7 @@ class TemplateCommand extends NflCommand
 
         if ($games) {
             if ($this->nflHandler->conds) {
-                $this->nflHandler->renderCondsTemplate();
+                $this->nflHandler->renderCondsTemplate($games);
                 $output->writeln("<info>Conds template successfully rendered</info>");
             } else {
                 foreach ($games as $game) {

@@ -34,6 +34,16 @@ NFL {{ nfl.year }}-{{ nfl.year + 1 }} {% if nfl.type == "pre"%} / PS {% endif %}
 -------TYT Tracker-------
 
 NFL.{{ nfl.year }}.{% if nfl.type == "pre"%}PS.{% endif %}Week.{{ "%02d"|format(nfl.week) }}.Condensed.Games.720p
+NFL.{{ nfl.year }}.{% if nfl.type == "pre"%}PS.{% endif %}Week.{{ "%02d"|format(nfl.week) }}.Thursday.Condensed.Game.720p
+NFL.{{ nfl.year }}.{% if nfl.type == "pre"%}PS.{% endif %}Week.{{ "%02d"|format(nfl.week) }}.Sunday.Early.Condensed.Games.720p
+NFL.{{ nfl.year }}.{% if nfl.type == "pre"%}PS.{% endif %}Week.{{ "%02d"|format(nfl.week) }}.Sunday.Late.Condensed.Games.720p
+NFL.{{ nfl.year }}.{% if nfl.type == "pre"%}PS.{% endif %}Week.{{ "%02d"|format(nfl.week) }}.Sunday.Condensed.Games.720p
+NFL.{{ nfl.year }}.{% if nfl.type == "pre"%}PS.{% endif %}Week.{{ "%02d"|format(nfl.week) }}.Monday.Condensed.Game.720p
+___________________________________________________________
+{% for game in games %}
+NFL.{{ nfl.year }}.{% if nfl.type == "pre"%}PS.{% endif %}Week.{{ "%02d"|format(nfl.week) }}.{{ game.awayName }}.at.{{ game.homeName }}.Condensed.720p
+{% endfor %}
+___________________________________________________________
 
 
 Released by: xsba

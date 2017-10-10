@@ -461,7 +461,7 @@ class NflHandler extends ContainerAware
         return $file;
     }
 
-    public function renderCondsTemplate() {
+    public function renderCondsTemplate($games) {
         $schedule = $this->getSchedule();
         $topic = $this
             ->templating
@@ -469,7 +469,8 @@ class NflHandler extends ContainerAware
                 "NflBundle:Console:conds.html.twig"
                 , array(
                     'nfl'       => $this
-                    ,'schedule' => $schedule
+                    , 'games'    => $games
+                    , 'schedule' => $schedule
                 )
             )
         ;
